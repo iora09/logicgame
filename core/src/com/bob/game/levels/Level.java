@@ -15,11 +15,12 @@ public abstract class Level {
     protected String[] tutorialImages;
     protected String[] hints;
     protected String text;
+    protected String levelName;
 
     protected Level next;
 
-    public Level(XmlReader.Element root) {
-
+    public Level(XmlReader.Element root, String levelName) {
+        this.levelName = levelName;
         XmlReader.Element bobNode = root.getChildByName("bob");
 
         this.floor = csvToArray(root.getChildByName("floor").getText());
@@ -40,6 +41,10 @@ public abstract class Level {
     public Level getNext() {
         return next;
     };
+
+    public String getLevelName() {
+        return levelName;
+    }
 
     public Boolean allowMacro() {
         return false;

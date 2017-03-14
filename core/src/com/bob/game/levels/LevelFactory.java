@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.XmlReader;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PipedInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,33 +22,23 @@ public class LevelFactory {
     }
 
     private static void populateWrite() {
-        WRITE.add(loadInternalLevel("levels/short.xml"));
-        WRITE.add(loadInternalLevel("levels/straight.xml"));
-        WRITE.add(loadInternalLevel("levels/turn.xml"));
-        WRITE.add(loadInternalLevel("levels/not.xml"));
-        WRITE.add(loadInternalLevel("levels/loop.xml"));
-
-        for (int i = 0; i < WRITE.size() - 1; i++) {
-            WRITE.get(i).setNext(WRITE.get(i+1));
+        File folder = new File("levels/write");
+        for (final File file : folder.listFiles()) {
+            loadInternalLevel(file.getPath());
         }
     }
 
     private static void populateRead() {
-        READ.add(loadInternalLevel("levels/guess.xml"));
-        READ.add(loadInternalLevel("levels/guessBis.xml"));
-        READ.add(loadInternalLevel("levels/guessTer.xml"));
-
-        for (int i = 0; i < READ.size() - 1; i++) {
-            READ.get(i).setNext(READ.get(i+1));
+        File folder = new File("levels/read");
+        for (final File file : folder.listFiles()) {
+            loadInternalLevel(file.getPath());
         }
     }
 
     private static void populateMacro() {
-        MACRO.add(loadInternalLevel("levels/macro.xml"));
-        MACRO.add(loadInternalLevel("levels/macro2.xml"));
-
-        for (int i = 0; i < MACRO.size() - 1; i++) {
-            MACRO.get(i).setNext(MACRO.get(i+1));
+        File folder = new File("levels/macro");
+        for (final File file : folder.listFiles()) {
+            loadInternalLevel(file.getPath());
         }
     }
 
@@ -72,14 +64,63 @@ public class LevelFactory {
         String type = root.getAttribute("type");
 
         switch (type) {
-            case "WRITE":
-                return new WriteLevel(root);
-            case "READ":
-                return new ReadLevel(root);
-            case "MACRO":
-                return new MacroLevel(root);
-            default:
-                return null;
+            case "WRITE": {
+                int index = getReplaceIndex(WRITE, file.nameWithoutExtension());
+                if (index >= 0) {
+                    WRITE.set(index, new WriteLevel(root, file.nameWithoutExtension()));
+                    
+                } else {
+                    WRITE.add(new WriteLevel(root, file.nameWithoutExtension()));
+                    index = WRITE.size() - 1;
+                    //file.copyTo(new FileHandle("levels/write"));
+                }
+                setNextInList(WRITE, index);
+                return WRITE.get(index);
+                
+            }
+            case "READ": {
+                int index = getReplaceIndex(READ, file.nameWithoutExtension());
+                if (index >= 0) {
+                    READ.set(index, new ReadLevel(root, file.nameWithoutExtension()));
+
+                } else {
+                    READ.add(new ReadLevel(root, file.nameWithoutExtension()));
+                    index = READ.size() - 1;
+                    //file.copyTo(new FileHandle("levels/read"));
+                }
+                setNextInList(READ, index);
+                return READ.get(index);
+            }
+
+            case "MACRO": {
+                int index = getReplaceIndex(MACRO, file.nameWithoutExtension());
+                if (index >= 0) {
+                    MACRO.set(index, new MacroLevel(root, file.nameWithoutExtension()));
+
+                } else {
+                    MACRO.add(new MacroLevel(root, file.nameWithoutExtension()));
+                    index = MACRO.size() - 1;
+                    //file.copyTo(new FileHandle("levels/macro"));
+                }
+                setNextInList(MACRO, index);
+                return MACRO.get(index);
+            }
+            default: return null;
+        }
+
+    }
+
+    private static void setNextInList(List<Level> levels, int nextIndex) {
+        if (nextIndex > 0) {
+            levels.get(nextIndex - 1).setNext(levels.get(nextIndex));
         }
     }
+
+    private static int getReplaceIndex(List<Level> levels, String levelName) {
+        for(int i = 0; i < levels.size(); i++) {
+            if (levels.get(i).getLevelName().equals(levelName)) return i;
+        }
+        return -1;
+    }
+
 }

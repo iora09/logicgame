@@ -6,8 +6,8 @@ import com.badlogic.gdx.utils.XmlReader;
 
 public class MacroLevel extends Level {
 
-    public MacroLevel(XmlReader.Element root) {
-        super(root);
+    public MacroLevel(XmlReader.Element root, String levelName) {
+        super(root, levelName);
     }
 
     @Override

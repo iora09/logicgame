@@ -7,8 +7,8 @@ import com.bob.game.inputs.Block;
 
 public class ReadLevel extends Level {
 
-    public ReadLevel(XmlReader.Element root) {
-        super(root);
+    public ReadLevel(XmlReader.Element root, String levelName) {
+        super(root, levelName);
         this.rules = extractRules(root.getChildByName("rules"));
     }
 

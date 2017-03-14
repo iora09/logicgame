@@ -33,7 +33,7 @@ public class Menu {
         initImport(skin);
     }
 
-    private void initImport(Skin skin) {
+    private void initImport(final Skin skin) {
         Image background = new Image(TextureFactory.createTexture("screens/menu.png"));
         background.setBounds(0,0, 1920, 1080);
         importGroup.addActor(background);
@@ -45,6 +45,7 @@ public class Menu {
         submitButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
                 LevelFactory.loadExternaLevel(importTextField.getText());
+                initLevels(skin);
                 importGroup.setVisible(false);
             }
         });
@@ -244,7 +245,7 @@ public class Menu {
 
         for (int i = 0; i < noLevels; i++) {
             final int j = i;
-            TextButton button = new TextButton(Integer.toString(i + 1), skin, "grey_square_button");
+            TextButton button = new TextButton(levels.get(i).getLevelName(), skin, "grey_square_button");
             button.setBounds(levelsButtonX, levelsButtonY, 100, 100);
 
             button.addListener(new ClickListener() {
@@ -266,10 +267,10 @@ public class Menu {
 
             levelsButtonX += 125;
 
-            if (levelsButtonX >= 1360) {
+            /*if (levelsButtonX >= 1360) {
                 levelsButtonY -= 125;
                 levelsButtonX = 560;
-            }
+            }       */
         }
 
     }

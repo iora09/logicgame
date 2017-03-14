@@ -7,8 +7,8 @@ import com.bob.game.inputs.Block;
 
 public class WriteLevel extends Level {
 
-    public WriteLevel(XmlReader.Element root) {
-        super(root);
+    public WriteLevel(XmlReader.Element root, String levelName) {
+        super(root, levelName);
 
         this.noRules = root.getChildByName("rules").getIntAttribute("available");
         this.inputs = extractBlocks(root.getChildByName("inputs"));
