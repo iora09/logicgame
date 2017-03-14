@@ -1,6 +1,7 @@
 package com.bob.game;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.*;
@@ -31,6 +32,7 @@ public class GameController {
         layerGroup.add("modal_inputs", new ModalLayer(skin));
         layerGroup.add("winning", new WinningLayer(skin, this));
         layerGroup.add("message", new MessageLayer(skin, this));
+        layerGroup.add("options", new OptionsLayer(skin, this));
         layerGroup.add("help screen", new HelpScreen(skin));
 
         inputsManager = new InputsManager();
@@ -95,6 +97,8 @@ public class GameController {
     public void render(float deltaTime) {
 
         ((ControlsLayer)layerGroup.get("controls")).disableSubmit(!inputsManager.checkRules());
+        ((ControlsLayer)layerGroup.get("controls"))
+                .checkSubmit(currentLevel.getOptions().isEmpty());
 
         inputsManager.toggleLights();
         inputsManager.lightOffRules();
@@ -149,6 +153,24 @@ public class GameController {
         }
     }
 
+    public void submitOptions() {
+        resetWorld();
+        ((OptionsLayer)layerGroup.get("options")).addOptionButtons(currentLevel.getOptions());
+        layerGroup.setVisibility("options", true);
+        /*if (currentLevel.allowMacro()) {
+            startLPSAnim(macroManager.getRulesString());
+        } else {
+            if (inputsManager.mixedParadigmUsed()) {
+                ((HelpScreen)layerGroup.get("help screen")).setImage("screens/both_paradigm.png");
+                layerGroup.setVisibility("help screen", true);
+            } else if (inputsManager.onlyConsequentUsed()) {
+                startMockAnim(inputsManager.getBlockStack());
+            } else {
+                startLPSAnim(inputsManager.getRulesString());
+            }
+        }     */
+    }
+
     public void resetWorld() {
         worldController.resetStage(currentLevel.getX(), currentLevel.getY());
         ((BackgroundLayer)layerGroup.get("background")).setNoLights(0);
@@ -158,7 +180,7 @@ public class GameController {
         worldController.startMockAnimation(blockStack);
     }
 
-    private void startLPSAnim(String LPS) {
+    protected void startLPSAnim(String LPS) {
         worldController.startLPSAnimation(currentLevel, LPS);
     }
 
@@ -201,4 +223,13 @@ public class GameController {
         ((HelpScreen)layerGroup.get("help screen")).setImages(res);
         layerGroup.setVisibility("help screen", true);
     }
+
+    protected Level getCurrentLevel() {
+        return currentLevel;
+    }
+
+    protected void setDisableButton(boolean toggle) {
+        ((ControlsLayer)layerGroup.get("controls")).getSubmitButton().setTouchable(Touchable.enabled);
+    }
+
 }

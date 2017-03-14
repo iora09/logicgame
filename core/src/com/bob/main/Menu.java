@@ -101,7 +101,7 @@ public class Menu {
         startLabel.setBounds(1185, 430, 400, 100);
         modeGroup.addActor(startLabel);
 
-        String[] menu = {"WRITER", "READER", "MACRO"};
+        String[] menu = {"WRITER", "READER", "MACRO", "ADVANCED"};
         Map<String, Button> buttons = addButtons(modeGroup, skin, menu);
 
         buttons.get("WRITER").addListener(new ClickListener() {
@@ -143,6 +143,21 @@ public class Menu {
             }
         });
 
+        buttons.get("ADVANCED").addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                int lvlIndex = 0;
+
+                if (Config.levelsAreLocked) {
+                    Preferences prefs = Gdx.app.getPreferences("Progress");
+                    lvlIndex = prefs.getInteger("advancedProgress", -1) + 1;
+                }
+
+                launchLevel(lvlIndex < LevelFactory.ADVANCED.size() ? LevelFactory.ADVANCED.get(lvlIndex) : LevelFactory.ADVANCED.get(0));
+            }
+        });
+
+
+
         addBackButton(skin, modeGroup);
 
         modeGroup.setVisible(false);
@@ -165,6 +180,7 @@ public class Menu {
                        prefs.putInteger("writeProgress", -1);
                        prefs.putInteger("readProgress", -1);
                        prefs.putInteger("macroProgress", -1);
+                       prefs.putInteger("advancedProgress", -1);
                    }
                }
         );
@@ -189,6 +205,7 @@ public class Menu {
         addLevelButtons(skin, LevelFactory.WRITE, "writeProgress", "Write", 430);
         addLevelButtons(skin, LevelFactory.READ, "readProgress", "Read", 300);
         addLevelButtons(skin, LevelFactory.MACRO, "macroProgress", "Macro", 170);
+        addLevelButtons(skin, LevelFactory.ADVANCED, "advancedProgress", "Advanced", 40);
 
         addBackButton(skin, levelsGroup);
 

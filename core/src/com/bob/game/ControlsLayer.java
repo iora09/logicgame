@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -16,11 +17,13 @@ class ControlsLayer extends Layer {
     private final Button resetButton;
     private final Button hintButton;
 
-    public ControlsLayer(Skin skin, final GameController controller) {
+
+    public ControlsLayer(final Skin skin, final GameController controller) {
         TextButton quitButton = new TextButton("MENU", skin, "blue_button");
         quitButton.setBounds(10, 15, 200, 50);
         quitButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
+                submitButton.setTouchable(Touchable.enabled);
                 controller.hide();
             }
         });
@@ -32,8 +35,11 @@ class ControlsLayer extends Layer {
         submitButton.setBounds(1700, 10, 200, 60);
         submitButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
-                if (!submitButton.isDisabled()) {
+                if (!submitButton.isDisabled() && !submitButton.isChecked()) {
                     controller.submit();
+                } else if (submitButton.isChecked()) {
+                    submitButton.setTouchable(Touchable.disabled);
+                    controller.submitOptions();
                 }
             }
         });
@@ -156,11 +162,19 @@ class ControlsLayer extends Layer {
         this.submitButton.setDisabled(disabled);
     }
 
+    public void checkSubmit(boolean checked) {
+        this.submitButton.setChecked(checked);
+    }
+
     public void disableReset(boolean disabled) {
         this.resetButton.setVisible(disabled);
     }
 
     public void disableHints(boolean disabled) {
         this.hintButton.setVisible(disabled);
+    }
+
+    public Button getSubmitButton() {
+        return submitButton;
     }
 }

@@ -12,11 +12,13 @@ public class LevelFactory {
     public static final List<Level> WRITE = new ArrayList<>();
     public static final List<Level> READ = new ArrayList<>();
     public static final List<Level> MACRO = new ArrayList<>();
+    public static final List<Level> ADVANCED = new ArrayList<>();
 
     public static void initialiseLevels() {
         populateWrite();
         populateRead();
         populateMacro();
+        populateAdvanced();
     }
 
     private static void populateWrite() {
@@ -47,6 +49,13 @@ public class LevelFactory {
 
         for (int i = 0; i < MACRO.size() - 1; i++) {
             MACRO.get(i).setNext(MACRO.get(i+1));
+        }
+    }
+
+    private static void populateAdvanced() {
+        ADVANCED.add(loadInternalLevel("levels/readLoop.xml"));
+        for (int i = 0; i < ADVANCED.size() - 1; i++) {
+            ADVANCED.get(i).setNext(ADVANCED.get(i+1));
         }
     }
 

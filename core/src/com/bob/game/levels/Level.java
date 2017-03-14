@@ -3,6 +3,9 @@ package com.bob.game.levels;
 import com.badlogic.gdx.utils.XmlReader;
 import com.bob.game.inputs.Block;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class Level {
 
     protected int[][] floor;
@@ -15,6 +18,7 @@ public abstract class Level {
     protected String[] tutorialImages;
     protected String[] hints;
     protected String text;
+    protected Map<String, Boolean> options;
 
     protected Level next;
 
@@ -29,10 +33,21 @@ public abstract class Level {
         this.text = root.getChildByName("text").getText();
         this.hints = extractStrings(root.getChildByName("hints"));
         this.tutorialImages = extractStrings(root.getChildByName("tutorial"));
+        this.options = extractOptions(root.getChildByName("options"));
 
         this.noRules = 8;
         this.inputs = new Block[]{};
         this.rules = new Block[][]{};
+    }
+
+    private Map<String,Boolean> extractOptions
+            (XmlReader.Element optionsContainer) {
+        Map<String, Boolean> options = new HashMap<>();
+        if (optionsContainer == null) return options;
+        for(int i = 0; i<optionsContainer.getChildCount(); ++i) {
+            options.put(optionsContainer.getChild(i).getChild(1).getText(), optionsContainer.getChild(i).getBoolean("value"));
+        }
+        return options;
     }
 
     public abstract void save();
@@ -91,6 +106,10 @@ public abstract class Level {
 
     public String[] getTutorialImages() {
         return tutorialImages;
+    }
+
+    public Map<String, Boolean> getOptions() {
+        return options;
     }
 
     public void setNext(Level next) {
