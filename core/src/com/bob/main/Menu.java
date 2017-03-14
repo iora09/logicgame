@@ -20,6 +20,7 @@ public class Menu {
     private final Group modeGroup = new Group();
     private final Group settingsGroup = new Group();
     private final Group levelsGroup = new Group();
+    private final Group importGroup = new Group();
     private boolean isVisible = true;
     private Level levelSelected;
 
@@ -29,6 +30,27 @@ public class Menu {
         initLevels(skin);
         initMode(skin);
         initSettings(skin);
+        initImport(skin);
+    }
+
+    private void initImport(Skin skin) {
+        Image background = new Image(TextureFactory.createTexture("screens/menu.png"));
+        background.setBounds(0,0, 1920, 1080);
+        importGroup.addActor(background);
+        final TextField importTextField = new TextField("Import Path", skin);
+        importTextField.setBounds(760, 430, 400, 50);
+        importGroup.addActor(importTextField);
+        TextButton submitButton = new TextButton("Submit", skin);
+        submitButton.setBounds(1160, 430, 100,50 );
+        submitButton.addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                LevelFactory.loadExternaLevel(importTextField.getText());
+                importGroup.setVisible(false);
+            }
+        });
+        importGroup.addActor(submitButton);
+        addBackButton(skin, importGroup);
+        importGroup.setVisible(false);
     }
 
     private void initMenu(final Skin skin) {
@@ -88,7 +110,7 @@ public class Menu {
         return buttons;
     }
 
-    private void initMode(Skin skin) {
+    private void initMode(final Skin skin) {
 
         Image levelsBkg = new Image(TextureFactory.createTexture("screens/menu.png"));
         levelsBkg.setBounds(0,0, 1920, 1080);
@@ -101,7 +123,7 @@ public class Menu {
         startLabel.setBounds(1185, 430, 400, 100);
         modeGroup.addActor(startLabel);
 
-        String[] menu = {"WRITER", "READER", "MACRO"};
+        String[] menu = {"WRITER", "READER", "MACRO", "IMPORT"};
         Map<String, Button> buttons = addButtons(modeGroup, skin, menu);
 
         buttons.get("WRITER").addListener(new ClickListener() {
@@ -140,6 +162,12 @@ public class Menu {
                 }
 
                 launchLevel(lvlIndex < LevelFactory.MACRO.size() ? LevelFactory.MACRO.get(lvlIndex) : LevelFactory.MACRO.get(0));
+            }
+        });
+
+        buttons.get("IMPORT").addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                importGroup.setVisible(true);
             }
         });
 
@@ -268,6 +296,7 @@ public class Menu {
         modeGroup.setVisible(false);
         levelsGroup.setVisible(false);
         settingsGroup.setVisible(false);
+        importGroup.setVisible(false);
         isVisible = false;
     }
 
@@ -284,5 +313,6 @@ public class Menu {
         stage.addActor(levelsGroup);
         stage.addActor(modeGroup);
         stage.addActor(settingsGroup);
+        stage.addActor(importGroup);
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.*;
@@ -32,7 +33,7 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create() {
 
-        skin = new Skin();
+        skin = new Skin(Gdx.files.internal("default-skin/uiskin.json"));
 		stage = new Stage(new FitViewport(1920, 1080));
 
 		skin.add("font", new BitmapFont());
@@ -131,7 +132,7 @@ public class Main extends ApplicationAdapter {
 		String[] buttonColor = {"grey", "grey_square", "big_grey", "orange", "red", "green", "blue", "yellow"};
 		String[] buttonFont = {"impact_small", "impact", "impact", "impact_small", "impact_small", "impact_small", "impact_small", "impact_small"};
 		skin.add("disabled_button", TextureFactory.createTexture("buttons/disabled.png"));
-
+		
 		for (int i = 0; i < buttonColor.length; i++) {
 			String color = buttonColor[i];
 			skin.add(color + "_button", TextureFactory.createTexture("buttons/" + color + ".png"));
