@@ -114,9 +114,11 @@ public class GameController {
         } else if (worldController.isBobConfused()) {
             ((MessageLayer) layerGroup.get("message")).changeText("Uh oh, Bob does not know which rule to follow...");
             layerGroup.setVisibility("message", true);
-        } else if (currentLevel.getNoRules() == 0 && numberOfSubmits > 1){
+        } else if (currentLevel.getType().equals("WRITE") && numberOfSubmits > 1
+                && !getTellemetricHints(worldController, inputsManager).isEmpty()){
             ((MessageLayer) layerGroup.get("message")).changeText(getTellemetricHints(worldController, inputsManager));
             layerGroup.setVisibility("message", true);
+            numberOfSubmits = 0;
         }
 
     }
@@ -126,6 +128,7 @@ public class GameController {
     }
 
     public void loadNextLevel() {
+        numberOfSubmits = 0;
         if (currentLevel.getNext() == null) { // Mode completed, back to menu
             hide();
         } else {
@@ -201,15 +204,16 @@ public class GameController {
         TiledMapTileLayer floor = worldController.getMapManager().getFloorLayer();
         for (int i = 0 ; i < floor.getWidth(); ++i) {
             for (int j = 0 ; j < floor.getHeight(); ++j) {
-                if (!worldController.getMapManager().getType(i,j).equals("water")) {
-                   tiles.add(worldController.getMapManager().getType(i,i));
+                if (!worldController.getMapManager().getType(i,j).equals("water")
+                        && !worldController.getMapManager().getType(i,j).equals("gold")) {
+                   tiles.add(worldController.getMapManager().getType(i,j));
                 }
             }
         }
 
         Set<String> rules = new HashSet<>();
-        for (int i = 0; i < inputsManager.getRules()[0].length; ++i) {
-            for (int j = 0; j <  inputsManager.getRules().length; ++j) {
+        for (int i = 0; i < inputsManager.getRules().length; ++i) {
+            for (int j = 0; j <  inputsManager.getRules()[i].length; ++j) {
                 if(inputsManager.getRules()[i][j].getType() == Type.FLUENT) {
                     rules.add(inputsManager.getRules()[i][j].getImageName());
                 }
@@ -218,14 +222,19 @@ public class GameController {
 
         tiles.removeAll(rules);
 
-        StringBuilder hintMessageBuilder = new StringBuilder("Hint : There are more coloured tiles on the map, but you" +
-                "are not using the following in your rules :");
+        StringBuilder hintMessageBuilder = new StringBuilder("Hint : There are more coloured tiles on the map, but you " +
+                "are not using the following in your rules: ");
 
         for (String tileNotUsed : tiles) {
-            hintMessageBuilder.append(tileNotUsed + " ");
+            hintMessageBuilder.append(tileNotUsed + ";");
         }
 
-        return  hintMessageBuilder.toString();
+        if (tiles.size() == 0) {
+            numberOfSubmits = 0;
+            return "";
+        } else {
+            return hintMessageBuilder.toString();
+        }
     }
 
     public void displayHelp() {
@@ -237,5 +246,8 @@ public class GameController {
 
         ((HelpScreen)layerGroup.get("help screen")).setImages(res);
         layerGroup.setVisibility("help screen", true);
+    }
+    public void resetTellemetricHints() {
+        numberOfSubmits = 0;
     }
 }

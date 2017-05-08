@@ -21,7 +21,7 @@ public class MessageLayer extends Layer {
         group.setVisible(initialVisibility);
 
         Image modal = new Image(TextureFactory.createTexture("screens/modal.png"));
-        modal.setBounds(710, 540, 500, 300);
+        modal.setBounds(650, 200, 600, 500);
         group.addActor(modal);
 
         // TEXT
@@ -32,14 +32,15 @@ public class MessageLayer extends Layer {
 
         text = new Label("", labelStyle);
         text.setWrap(true);
-        text.setBounds(710, 540, 500, 300);
+        text.setBounds(650, 200, 600, 500);
         text.setAlignment(Align.top);
         group.addActor(text);
 
         TextButton nextButton = new TextButton("Understood", skin, "grey_button");
-        nextButton.setBounds(810, 560, 300, 75);
+        nextButton.setBounds(790, 210, 300, 75);
         nextButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
+                //gameController.resetTellemetricHints();
                 gameController.resetWorld();
                 group.setVisible(false);
             }

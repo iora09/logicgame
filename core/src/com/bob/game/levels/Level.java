@@ -16,6 +16,7 @@ public abstract class Level {
     protected String[] hints;
     protected String text;
     protected String levelName;
+    protected String type;
 
     protected Level next;
 
@@ -30,7 +31,7 @@ public abstract class Level {
         this.text = root.getChildByName("text").getText();
         this.hints = extractStrings(root.getChildByName("hints"));
         this.tutorialImages = extractStrings(root.getChildByName("tutorial"));
-
+        this.type = root.getAttribute("type");
         this.noRules = 8;
         this.inputs = new Block[]{};
         this.rules = new Block[][]{};
@@ -147,5 +148,9 @@ public abstract class Level {
         }
 
         return res;
+    }
+
+    public String getType() {
+        return type;
     }
 }
