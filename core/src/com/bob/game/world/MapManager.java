@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.bob.main.Config;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -222,5 +223,9 @@ public class MapManager {
         String type = this.getType(Math.round(coord.getWorldX()), Math.round(coord.getWorldY()));
 
         return type.equals("question");
+    }
+
+    public TiledMapTileLayer getFloorLayer() {
+        return floorLayer;
     }
 }

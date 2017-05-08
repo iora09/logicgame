@@ -1,5 +1,6 @@
 package com.bob.game;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,6 +20,7 @@ public class GameController {
     private final MacroManager macroManager;
     private final WorldController worldController;
     private int currentHint = 0;
+    private int numberOfSubmits = 0;
 
     public GameController(Skin skin, OrthographicCamera camera) {
 
@@ -58,6 +60,7 @@ public class GameController {
     public void startNewLevel() {
 
         currentHint = 0;
+        numberOfSubmits = 0;
 
         if (currentLevel.hasHints()) {
 
@@ -108,10 +111,11 @@ public class GameController {
         if (worldController.isLevelWon()) {
             currentLevel.save();
             layerGroup.setVisibility("winning", true);
-        }
-
-        if (worldController.isBobConfused()) {
+        } else if (worldController.isBobConfused()) {
             ((MessageLayer) layerGroup.get("message")).changeText("Uh oh, Bob does not know which rule to follow...");
+            layerGroup.setVisibility("message", true);
+        } else if (currentLevel.getNoRules() == 0 && numberOfSubmits > 1){
+            ((MessageLayer) layerGroup.get("message")).changeText(getTellemetricHints(worldController, inputsManager));
             layerGroup.setVisibility("message", true);
         }
 
@@ -134,6 +138,7 @@ public class GameController {
 
     public void submit() {
         resetWorld();
+        numberOfSubmits++;
 
         if (currentLevel.allowMacro()) {
             startLPSAnim(macroManager.getRulesString());
@@ -189,6 +194,38 @@ public class GameController {
             layerGroup.setVisibility("message", true);
             currentHint = (currentHint + 1) % currentLevel.getHints().length;
         }
+    }
+
+    private String getTellemetricHints(WorldController worldController, InputsManager inputsManager) {
+        Set<String> tiles = new HashSet<>();
+        TiledMapTileLayer floor = worldController.getMapManager().getFloorLayer();
+        for (int i = 0 ; i < floor.getWidth(); ++i) {
+            for (int j = 0 ; j < floor.getHeight(); ++j) {
+                if (!worldController.getMapManager().getType(i,j).equals("water")) {
+                   tiles.add(worldController.getMapManager().getType(i,i));
+                }
+            }
+        }
+
+        Set<String> rules = new HashSet<>();
+        for (int i = 0; i < inputsManager.getRules()[0].length; ++i) {
+            for (int j = 0; j <  inputsManager.getRules().length; ++j) {
+                if(inputsManager.getRules()[i][j].getType() == Type.FLUENT) {
+                    rules.add(inputsManager.getRules()[i][j].getImageName());
+                }
+            }
+        }
+
+        tiles.removeAll(rules);
+
+        StringBuilder hintMessageBuilder = new StringBuilder("Hint : There are more coloured tiles on the map, but you" +
+                "are not using the following in your rules :");
+
+        for (String tileNotUsed : tiles) {
+            hintMessageBuilder.append(tileNotUsed + " ");
+        }
+
+        return  hintMessageBuilder.toString();
     }
 
     public void displayHelp() {
