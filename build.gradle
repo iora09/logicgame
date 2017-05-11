@@ -39,6 +39,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+
     }
 }
 
@@ -64,6 +65,8 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        compile "com.github.noraui:ojdbc7:12.1.0.2"
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
         antlr "org.antlr:antlr:3.5.2"
     }
 }

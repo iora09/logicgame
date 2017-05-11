@@ -2,6 +2,7 @@ package com.bob.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -9,8 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.bob.game.database.Database;
+import com.bob.game.database.LocalDatabase;
 import com.bob.game.levels.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.sql.Connection;
 import java.util.*;
 import java.util.List;
 
@@ -45,6 +50,7 @@ public class Menu {
         submitButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
                 LevelFactory.loadExternaLevel(importTextField.getText());
+                insertIntoDatabase(importTextField.getText());
                 initLevels(skin);
                 importGroup.setVisible(false);
             }
@@ -52,6 +58,24 @@ public class Menu {
         importGroup.addActor(submitButton);
         addBackButton(skin, importGroup);
         importGroup.setVisible(false);
+    }
+
+    private void insertIntoDatabase(String path) {
+        Database db = new LocalDatabase();
+        Connection connection = db.connect();
+        FileHandle fileHandle = new FileHandle(path);
+        String xmlString = fileHandle.readString();
+        xmlString = xmlString.replace("'", "''");
+        db.otherQuery(connection, "INSERT INTO GAMES \n VALUES ("
+                + "'"
+                + fileHandle.nameWithoutExtension()
+                + "'"
+                + ","
+                + "xmltype('"
+                + xmlString
+                + "')"
+                + ","
+                + "'TYPES')");
     }
 
     private void initMenu(final Skin skin) {
