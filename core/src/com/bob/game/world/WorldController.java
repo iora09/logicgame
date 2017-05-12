@@ -167,23 +167,20 @@ public class WorldController {
     }
 
     private void updateGameState() {
-
-        WorldCoordinates coord = bob.getCoord();
-
-        if (mapManager.checkIfWet(coord)) {
+        if (isBobWet()) {
             bob.updateState(EntityState.WET);
             isAnimPlaying = false;
-        }
+        } else {
 
-        // Adds delay to show winning screen
-        if (mapManager.chekIfWon(coord, objects.size())) {
-            bob.updateState(EntityState.WON);
-            nbWon++;
-        }
+            // Adds delay to show winning screen
+            WorldCoordinates coord = bob.getCoord();
+            if (mapManager.chekIfWon(coord, objects.size())) {
+                bob.updateState(EntityState.WON);
+                nbWon++;
 
-        // Update current rule
-        currentRuleIndexes.clear();
-        currentRuleIndexes.addAll(instructionRetriever.getAppliedRuleIndexes());
+            }
+            updateCurrentRule();
+        }
     }
 
     public boolean isLevelWon() {
@@ -237,5 +234,15 @@ public class WorldController {
 
     public MapManager getMapManager() {
         return mapManager;
+    }
+
+    public void updateCurrentRule() {
+        // Update current rule
+        currentRuleIndexes.clear();
+        currentRuleIndexes.addAll(instructionRetriever.getAppliedRuleIndexes());
+    }
+
+    public boolean isBobWet() {
+        return mapManager.checkIfWet(bob.getCoord());
     }
 }
