@@ -1,9 +1,11 @@
 package com.bob.game;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
@@ -107,7 +109,15 @@ public class GameController {
 
         worldController.render(deltaTime);
         ((BackgroundLayer)layerGroup.get("background")).setNoLights(worldController.getMaxObjects() - worldController.getNoObjects());
-
+        if (worldController.isBobWet()) {
+            ((MessageLayer) layerGroup.get("message")).changeText("Uh oh, the rule highlighted made Bob fall in the water. Can you fix it?");
+            ((MessageLayer) layerGroup.get("message")).addListenerToNextButton(new ClickListener() {
+                public void clicked(InputEvent ie, float x, float y) {
+                    worldController.updateCurrentRule();
+                }
+            });
+            layerGroup.setVisibility("message", true);
+        }
         if (worldController.isLevelWon()) {
             currentLevel.save();
             layerGroup.setVisibility("winning", true);

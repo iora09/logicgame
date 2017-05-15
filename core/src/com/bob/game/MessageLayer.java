@@ -15,6 +15,7 @@ import com.bob.main.TextureFactory;
 public class MessageLayer extends Layer {
 
     private final Label text;
+    private TextButton nextButton;
 
     public MessageLayer(Skin skin, final GameController gameController) {
         initialVisibility = false;
@@ -36,7 +37,7 @@ public class MessageLayer extends Layer {
         text.setAlignment(Align.top);
         group.addActor(text);
 
-        TextButton nextButton = new TextButton("Understood", skin, "grey_button");
+        nextButton = new TextButton("Understood", skin, "grey_button");
         nextButton.setBounds(790, 210, 300, 75);
         nextButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
@@ -50,5 +51,9 @@ public class MessageLayer extends Layer {
 
     public void changeText(String text) {
         this.text.setText(text);
+    }
+
+    public void addListenerToNextButton(ClickListener clickListener) {
+        nextButton.addListener(clickListener);
     }
 }
