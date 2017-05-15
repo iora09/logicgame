@@ -35,48 +35,17 @@ public class Menu {
         initLevels(skin);
         initMode(skin);
         initSettings(skin);
-        initImport(skin);
     }
 
-    private void initImport(final Skin skin) {
-        Image background = new Image(TextureFactory.createTexture("screens/menu.png"));
-        background.setBounds(0,0, 1920, 1080);
-        importGroup.addActor(background);
-        final TextField importTextField = new TextField("Import Path", skin);
-        importTextField.setBounds(760, 430, 400, 50);
-        importGroup.addActor(importTextField);
-        TextButton submitButton = new TextButton("Submit", skin);
-        submitButton.setBounds(1160, 430, 100,50 );
-        submitButton.addListener(new ClickListener() {
-            public void clicked(InputEvent ie, float x, float y) {
-                LevelFactory.loadExternaLevel(importTextField.getText());
-                insertIntoDatabase(importTextField.getText());
-                initLevels(skin);
-                importGroup.setVisible(false);
-            }
-        });
-        importGroup.addActor(submitButton);
-        addBackButton(skin, importGroup);
-        importGroup.setVisible(false);
+    private void initGameStore(final Skin skin) {
+        GameStore gameStore = new GameStore(skin);
+        gameStore.setVisible(false);
     }
 
-    private void insertIntoDatabase(String path) {
-        Database db = new LocalDatabase();
-        Connection connection = db.connect();
-        FileHandle fileHandle = new FileHandle(path);
-        String xmlString = fileHandle.readString();
-        xmlString = xmlString.replace("'", "''");
-        db.otherQuery(connection, "INSERT INTO GAMES \n VALUES ("
-                + "'"
-                + fileHandle.nameWithoutExtension()
-                + "'"
-                + ","
-                + "xmltype('"
-                + xmlString
-                + "')"
-                + ","
-                + "'TYPES')");
-    }
+
+
+
+
 
     private void initMenu(final Skin skin) {
         // Bkg
@@ -299,7 +268,7 @@ public class Menu {
 
     }
 
-    private void addBackButton(Skin skin, final Group group) {
+    public static void addBackButton(Skin skin, final Group group) {
         TextButton backButton = new TextButton("BACK", skin, "grey_button");
         backButton.setBounds(10, 15, 200, 60);
         backButton.addListener(new ClickListener() {

@@ -44,7 +44,8 @@ class Draggable {
     public void clear() {
         sourceActor.remove();
     }
-        public void setTooltip(Skin skin, String tooltipText) {
+
+    public void setTooltip(Skin skin, String tooltipText) {
         TextTooltip tooltip = new TextTooltip("  " + tooltipText + "  ", skin, "tooltipStyle");
         tooltip.setInstant(true);
         sourceActor.addListener(tooltip);

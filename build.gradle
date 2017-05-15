@@ -67,6 +67,9 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.github.noraui:ojdbc7:12.1.0.2"
         compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+        compile 'mysql:mysql-connector-java:6.0.6'
+        compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.1'
+        compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
         antlr "org.antlr:antlr:3.5.2"
     }
 }

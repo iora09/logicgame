@@ -1,17 +1,41 @@
 package com.bob.game.database;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class LocalDatabase implements Database {
     @Override
-    public Connection connect(){
+    public Connection connect(DataSource ds){
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "system", "iora09");
+            Connection connection = ds.getConnection();
             return connection;
-        } catch (ClassNotFoundException|SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to local database : ", e);
         }
+    }
+
+
+    public static DataSource getDataSource(String dbType){
+        BasicDataSource ds = new BasicDataSource();
+
+
+        if("mysql".equals(dbType)){
+            ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            ds.setUrl("jdbc:mysql://localhost:3306/db");
+            ds.setUsername("root");
+            ds.setPassword("iora09");
+        }else if("oracle".equals(dbType)){
+            ds.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+            ds.setUrl("jdbc:oracle:thin:@localhost:1521:orcl");
+            ds.setUsername("system");
+            ds.setPassword("iora09");
+        }else{
+            return null;
+        }
+
+        return ds;
     }
 
     @Override
