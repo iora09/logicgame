@@ -21,13 +21,13 @@ import java.util.List;
 
 public class Menu {
 
-    private final Group menuGroup = new Group();
-    private final Group modeGroup = new Group();
-    private final Group settingsGroup = new Group();
-    private final Group levelsGroup = new Group();
-    private final Group importGroup = new Group();
-    private boolean isVisible = true;
-    private Level levelSelected;
+    private static final Group menuGroup = new Group();
+    private static final Group modeGroup = new Group();
+    private static final Group settingsGroup = new Group();
+    private static final Group levelsGroup = new Group();
+    private static Group gameStoreGroup = new Group();
+    private static boolean isVisible = true;
+    private static Level levelSelected;
 
     public Menu(Skin skin) {
 
@@ -35,17 +35,13 @@ public class Menu {
         initLevels(skin);
         initMode(skin);
         initSettings(skin);
+        initGameStore(skin);
     }
 
     private void initGameStore(final Skin skin) {
-        GameStore gameStore = new GameStore(skin);
-        gameStore.setVisible(false);
+        gameStoreGroup = new GameStore(skin);
+        gameStoreGroup.setVisible(false);
     }
-
-
-
-
-
 
     private void initMenu(final Skin skin) {
         // Bkg
@@ -117,7 +113,7 @@ public class Menu {
         startLabel.setBounds(1185, 430, 400, 100);
         modeGroup.addActor(startLabel);
 
-        String[] menu = {"WRITER", "READER", "MACRO", "IMPORT"};
+        String[] menu = {"WRITER", "READER", "MACRO", "GAME STORE"};
         Map<String, Button> buttons = addButtons(modeGroup, skin, menu);
 
         buttons.get("WRITER").addListener(new ClickListener() {
@@ -159,9 +155,10 @@ public class Menu {
             }
         });
 
-        buttons.get("IMPORT").addListener(new ClickListener() {
+        buttons.get("GAME STORE").addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
-                importGroup.setVisible(true);
+                ((GameStore)gameStoreGroup).initLevelsFromDb(skin);
+                gameStoreGroup.setVisible(true);
             }
         });
 
@@ -197,7 +194,7 @@ public class Menu {
         settingsGroup.setVisible(false);
     }
 
-    private void launchLevel(Level level) {
+    public static void launchLevel(Level level) {
         levelSelected = level;
         hide();
     }
@@ -285,12 +282,12 @@ public class Menu {
         isVisible = true;
     }
 
-    public void hide() {
+    public static void hide() {
         menuGroup.setVisible(false);
         modeGroup.setVisible(false);
         levelsGroup.setVisible(false);
         settingsGroup.setVisible(false);
-        importGroup.setVisible(false);
+        gameStoreGroup.setVisible(false);
         isVisible = false;
     }
 
@@ -307,6 +304,6 @@ public class Menu {
         stage.addActor(levelsGroup);
         stage.addActor(modeGroup);
         stage.addActor(settingsGroup);
-        stage.addActor(importGroup);
+        stage.addActor(gameStoreGroup);
     }
 }

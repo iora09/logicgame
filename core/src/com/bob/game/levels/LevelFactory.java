@@ -61,53 +61,62 @@ public class LevelFactory {
             e.printStackTrace();
         }
 
+        return loadLevelFromXmlRoot(root, file.nameWithoutExtension());
+    }
+
+    private static Level loadLevelFromXmlRoot(XmlReader.Element root, String name) {
         String type = root.getAttribute("type");
 
         switch (type) {
             case "WRITE": {
-                int index = getReplaceIndex(WRITE, file.nameWithoutExtension());
+                int index = getReplaceIndex(WRITE, name);
                 if (index >= 0) {
-                    WRITE.set(index, new WriteLevel(root, file.nameWithoutExtension()));
-                    
+                    WRITE.set(index, new WriteLevel(root, name));
+
                 } else {
-                    WRITE.add(new WriteLevel(root, file.nameWithoutExtension()));
+                    WRITE.add(new WriteLevel(root, name));
                     index = WRITE.size() - 1;
-                    //file.copyTo(new FileHandle("levels/write"));
                 }
                 setNextInList(WRITE, index);
                 return WRITE.get(index);
-                
+
             }
             case "READ": {
-                int index = getReplaceIndex(READ, file.nameWithoutExtension());
+                int index = getReplaceIndex(READ, name);
                 if (index >= 0) {
-                    READ.set(index, new ReadLevel(root, file.nameWithoutExtension()));
+                    READ.set(index, new ReadLevel(root, name));
 
                 } else {
-                    READ.add(new ReadLevel(root, file.nameWithoutExtension()));
+                    READ.add(new ReadLevel(root, name));
                     index = READ.size() - 1;
-                    //file.copyTo(new FileHandle("levels/read"));
                 }
                 setNextInList(READ, index);
                 return READ.get(index);
             }
 
             case "MACRO": {
-                int index = getReplaceIndex(MACRO, file.nameWithoutExtension());
+                int index = getReplaceIndex(MACRO, name);
                 if (index >= 0) {
-                    MACRO.set(index, new MacroLevel(root, file.nameWithoutExtension()));
+                    MACRO.set(index, new MacroLevel(root, name));
 
                 } else {
-                    MACRO.add(new MacroLevel(root, file.nameWithoutExtension()));
+                    MACRO.add(new MacroLevel(root, name));
                     index = MACRO.size() - 1;
-                    //file.copyTo(new FileHandle("levels/macro"));
                 }
                 setNextInList(MACRO, index);
                 return MACRO.get(index);
             }
             default: return null;
         }
+    }
 
+    public static Level createLevel(String type, XmlReader.Element root, String name) {
+        switch (type) {
+            case "READ" : return new ReadLevel(root, name);
+            case "WRITE" : return new WriteLevel(root, name);
+            case "MACRO" : return new MacroLevel(root, name);
+            default: return null;
+        }
     }
 
     private static void setNextInList(List<Level> levels, int nextIndex) {

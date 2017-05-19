@@ -6,11 +6,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.GameController;
@@ -144,5 +143,9 @@ public class Main extends ApplicationAdapter {
 			colorButtonStyle.font = skin.getFont(buttonFont[i]);
 			skin.add(color + "_button", colorButtonStyle);
 		}
+
+		Label.LabelStyle labelStyle = new Label.LabelStyle();
+		labelStyle.font = skin.getFont("white");
+		skin.add("label_style", labelStyle);
 	}
 }

@@ -3,7 +3,11 @@ package com.bob.game.database;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 public class LocalDatabase implements Database {
     @Override
@@ -19,18 +23,23 @@ public class LocalDatabase implements Database {
 
     public static DataSource getDataSource(String dbType){
         BasicDataSource ds = new BasicDataSource();
-
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream("db.prop"));
+        } catch (IOException e) {
+            throw new RuntimeException("The database properties file(db.prop) is not found or could not be opened: " + e);
+        }
 
         if("mysql".equals(dbType)){
-            ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-            ds.setUrl("jdbc:mysql://localhost:3306/db");
-            ds.setUsername("root");
-            ds.setPassword("iora09");
+            ds.setDriverClassName(prop.getProperty("MYSQL_DB_DRIVER_CLASS"));
+            ds.setUrl(prop.getProperty("MYSQL_DB_URL"));
+            ds.setUsername(prop.getProperty("MYSQL_DB_USER"));
+            ds.setPassword(prop.getProperty("MYSQL_DB_PASSWORD"));
         }else if("oracle".equals(dbType)){
-            ds.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-            ds.setUrl("jdbc:oracle:thin:@localhost:1521:orcl");
-            ds.setUsername("system");
-            ds.setPassword("iora09");
+            ds.setDriverClassName(prop.getProperty("ORACLE_DB_DRIVER_CLASS"));
+            ds.setUrl(prop.getProperty("ORACLE_DB_URL"));
+            ds.setUsername(prop.getProperty("ORACLE_DB_USER"));
+            ds.setPassword(prop.getProperty("ORACLE_DB_PASSWORD"));
         }else{
             return null;
         }
