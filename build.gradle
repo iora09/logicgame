@@ -70,6 +70,7 @@ project(":core") {
         compile 'mysql:mysql-connector-java:6.0.6'
         compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.1'
         compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
+        compile 'com.google.guava:guava:21.0'
         antlr "org.antlr:antlr:3.5.2"
     }
 }

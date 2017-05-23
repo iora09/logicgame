@@ -25,7 +25,7 @@ public class Menu {
     private static final Group modeGroup = new Group();
     private static final Group settingsGroup = new Group();
     private static final Group levelsGroup = new Group();
-    private static Group gameStoreGroup = new Group();
+    private static Group gameStoreGroup = new GameStore();
     private static boolean isVisible = true;
     private static Level levelSelected;
 
@@ -35,12 +35,7 @@ public class Menu {
         initLevels(skin);
         initMode(skin);
         initSettings(skin);
-        initGameStore(skin);
-    }
-
-    private void initGameStore(final Skin skin) {
-        gameStoreGroup = new GameStore(skin);
-        gameStoreGroup.setVisible(false);
+        ((GameStore)gameStoreGroup).init(skin, false);
     }
 
     private void initMenu(final Skin skin) {

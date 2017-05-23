@@ -1,48 +1,111 @@
 package com.bob.main;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.XmlReader;
+import com.bob.game.FileChooser;
 import com.bob.game.database.Database;
 import com.bob.game.database.LocalDatabase;
 import com.bob.game.levels.Level;
 import com.bob.game.levels.LevelFactory;
+import com.google.common.hash.Hashing;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
+
 public class GameStore extends Group {
 
-    private final Group importGroup = new Group();
+    private static boolean loggedIn = false;
+    private static User user;
     private final Group gamesGroup = new Group();
+    private final Group logInGroup = new Group();
 
-    public GameStore(Skin skin) {
+    public GameStore() {
+    }
+
+    public void init(Skin skin, boolean visibility) {
         Image background = new Image(TextureFactory.createTexture("screens/games_store.png"));
         background.setBounds(0,0, 1920, 1080);
         this.addActor(background);
         Menu.addBackButton(skin, this);
-        addImportButton(skin);
-        initImportButton(skin);
-        this.addActor(importGroup);
         initLevelsFromDb(skin);
         this.addActor(gamesGroup);
+        addImportButton(skin);
+        if (loggedIn) {
+            addLogOutButton(skin);
+        } else {
+            initLogInGroup(skin);
+            addLogInButton(skin);
+        }
+        this.addActor(logInGroup);
         gamesGroup.setVisible(true);
+        this.setVisible(visibility);
+    }
+    private void addLogOutButton(final Skin skin) {
+        Label userLabel = new Label("Welcome, " + user.getUsername(), skin, "label_style");
+        userLabel.setBounds(1500, 1000, 200, 60);
+        TextButton logOutButton = new TextButton("LOG OUT", skin, "grey_button");
+        logOutButton.setBounds(1600, 930, 200, 60);
+        logOutButton.addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                loggedIn = false;
+                user = null;
+                init(skin, true);
+            }
+        });
+        this.addActor(userLabel);
+        this.addActor(logOutButton);
     }
 
-    private void addImportButton(Skin skin) {
+    private void addLogInButton(Skin skin) {
+        TextButton logInButton = new TextButton("LOG IN", skin, "grey_button");
+        logInButton.setBounds(1600, 1000, 200, 60);
+        logInButton.addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                logInGroup.setVisible(true);
+            }
+        });
+        this.addActor(logInButton);
+    }
+
+    private void addImportButton(final Skin skin) {
         final TextButton importButton = new TextButton("IMPORT", skin, "grey_button");
         importButton.setBounds(1600, 15, 200, 60);
         importButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
-                importGroup.setVisible(true);
+                FileChooser fileChooser = new FileChooser("Choose game to import", skin) {
+                    @Override
+                    protected void result(Object object) {
+                        if (object.equals("OK")) {
+                            FileHandle fileHandle = getFile();
+                            if (fileHandle != null && fileHandle.exists() && !fileHandle.isDirectory()
+                                    && fileHandle.extension().equals("xml")) {
+                                insertIntoDatabase(fileHandle);
+                                initLevelsFromDb(skin);
+                            } else if (object.equals("Cancel")) {
+                                this.setVisible(false);
+                            }
+                        }
+                    }
+                };
+                fileChooser.setDirectory(new FileHandle(Gdx.files.getExternalStoragePath()));
+                fileChooser.setBounds(1400, 100, 400, 400);
+                addFileChooser(fileChooser);
             }
         });
         this.addActor(importButton);
+    }
+
+    private void addFileChooser(FileChooser fileChooser) {
+        this.addActor(fileChooser);
     }
 
     public void initLevelsFromDb(Skin skin) {
@@ -88,32 +151,6 @@ public class GameStore extends Group {
         gamesGroup.addActor(infoLabel);
     }
 
-
-    private void initImportButton(final Skin skin) {
-            Image background = new Image(TextureFactory.createTexture("screens/games_store.png"));
-            background.setBounds(0,0, 1920, 1080);
-            importGroup.addActor(background);
-            final TextField importTextField = new TextField("Import Path", skin);
-            importTextField.setBounds(760, 430, 400, 50);
-            importGroup.addActor(importTextField);
-            TextButton submitButton = new TextButton("Submit", skin);
-            submitButton.setBounds(1160, 430, 100,50 );
-            submitButton.addListener(new ClickListener() {
-                public void clicked(InputEvent ie, float x, float y) {
-                    //LevelFactory.loadExternaLevel(importTextField.getText());
-                    FileHandle fileHandle = new FileHandle(importTextField.getText());
-                    if (fileHandle.exists() && !fileHandle.isDirectory() && fileHandle.extension().equals("xml")) {
-                        insertIntoDatabase(fileHandle);
-                        initLevelsFromDb(skin);
-                        importGroup.setVisible(false);
-                    }
-                }
-            });
-            importGroup.addActor(submitButton);
-            Menu.addBackButton(skin, importGroup);
-            importGroup.setVisible(false);
-    }
-
     private void insertIntoDatabase(FileHandle fileHandle) {
         Database db = new LocalDatabase();
         Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
@@ -133,6 +170,60 @@ public class GameStore extends Group {
             connection.close();
         } catch(SQLException e) { 
             throw new RuntimeException("Can't close connection: " + e); 
+        }
+    }
+
+    private void initLogInGroup(final Skin skin) {
+        Image logInPanel = new Image(TextureFactory.createTexture("screens/modal.png"));
+        logInPanel.setBounds(640, 400, 600, 380);
+        logInGroup.addActor(logInPanel);
+
+        Label usernameLabel = new Label("Username", skin, "label_style");
+        Label passwordLabel = new Label("Password", skin.get("label_style", Label.LabelStyle.class));
+
+        usernameLabel.setBounds(660, 650, 200, 50);
+        passwordLabel.setBounds(660, 550, 200, 50);
+
+        final TextField usernameField = new TextField("", skin);
+        final TextField passwordField = new TextField("", skin);
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
+        usernameField.setBounds(900, 650, 300, 50);
+        passwordField.setBounds(900, 550, 300, 50);
+
+        TextButton logInButton = new TextButton("Log in", skin, "grey_button");
+        logInButton.setBounds(870, 410, 200, 60);
+        logInButton.addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                tryLoggingIn(usernameField.getText(), passwordField.getText(), skin);
+                logInGroup.setVisible(false);
+            }
+        });
+
+        logInGroup.addActor(usernameLabel);
+        logInGroup.addActor(passwordLabel);
+        logInGroup.addActor(usernameField);
+        logInGroup.addActor(passwordField);
+        logInGroup.addActor(logInButton);
+        logInGroup.setVisible(false);
+    }
+
+    private void tryLoggingIn(String username, String password, Skin skin) {
+        String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        Database db = new LocalDatabase();
+        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        ResultSet rs = db.selectQuery(connection, "SELECT * FROM users "
+                + "WHERE users.username='" + username + "'"
+                + " AND "
+                + "users.password='" + hashedPassword + "'");
+        try {
+            if(rs.next()) {
+                loggedIn = true;
+                user = new User(username);
+                init(skin, true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Can't log in due to a SQL error: ", e);
         }
     }
 }
