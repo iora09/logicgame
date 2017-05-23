@@ -27,6 +27,7 @@ public class GameStore extends Group {
     private static User user;
     private final Group gamesGroup = new Group();
     private final Group logInGroup = new Group();
+    private Label logInError;
 
     public GameStore() {
     }
@@ -196,7 +197,6 @@ public class GameStore extends Group {
         logInButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
                 tryLoggingIn(usernameField.getText(), passwordField.getText(), skin);
-                logInGroup.setVisible(false);
             }
         });
 
@@ -220,10 +220,24 @@ public class GameStore extends Group {
             if(rs.next()) {
                 loggedIn = true;
                 user = new User(username);
+                removeLogInError();
+                logInGroup.setVisible(false);
                 init(skin, true);
+            } else {
+                addLogInError(skin);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Can't log in due to a SQL error: ", e);
         }
+    }
+
+    private void addLogInError(Skin skin) {
+        logInError = new Label("Username or password not recognised!", skin, "red_label");
+        logInError.setBounds(700, 730, 500, 30);
+        logInGroup.addActor(logInError);
+    }
+
+    private void removeLogInError() {
+        logInGroup.removeActor(logInError);
     }
 }

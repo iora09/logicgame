@@ -2,6 +2,7 @@ package com.bob.main;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -128,6 +129,10 @@ public class Main extends ApplicationAdapter {
 		smallFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		skin.add("impact_small", smallFont);
 
+		BitmapFont defaultFont = new BitmapFont(Gdx.files.internal("default-skin/default.fnt"));
+		defaultFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		skin.add("default", defaultFont);
+
 		String[] buttonColor = {"grey", "grey_square", "big_grey", "orange", "red", "green", "blue", "yellow"};
 		String[] buttonFont = {"impact_small", "impact", "impact", "impact_small", "impact_small", "impact_small", "impact_small", "impact_small"};
 		skin.add("disabled_button", TextureFactory.createTexture("buttons/disabled.png"));
@@ -147,5 +152,10 @@ public class Main extends ApplicationAdapter {
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
 		labelStyle.font = skin.getFont("white");
 		skin.add("label_style", labelStyle);
+
+		Label.LabelStyle redLabelStyle = new Label.LabelStyle();
+		redLabelStyle.fontColor = Color.RED;
+		redLabelStyle.font = skin.getFont("default");
+		skin.add("red_label", redLabelStyle);
 	}
 }
