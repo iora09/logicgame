@@ -59,13 +59,8 @@ public class LocalDatabase implements Database {
     }
 
     @Override
-    public int otherQuery(Connection connection, String sql){
-        try {
+    public int otherQuery(Connection connection, String sql) throws SQLException{
         Statement statement = connection.createStatement();
         return statement.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to execute SQL update/insert/delete in local db : ", e);
-        }
-
     }
 }

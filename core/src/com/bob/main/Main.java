@@ -157,5 +157,15 @@ public class Main extends ApplicationAdapter {
 		redLabelStyle.fontColor = Color.RED;
 		redLabelStyle.font = skin.getFont("default");
 		skin.add("red_label", redLabelStyle);
+
+		Label.LabelStyle lightGreyLabelStyle = new Label.LabelStyle();
+		lightGreyLabelStyle.fontColor = Color.LIGHT_GRAY;
+		lightGreyLabelStyle.font = skin.getFont("default");
+		skin.add("light_grey_label", lightGreyLabelStyle);
+
+		Label.LabelStyle overLabelStyle = new Label.LabelStyle();
+		overLabelStyle.fontColor = Color.WHITE;
+		overLabelStyle.font = skin.getFont("default");
+		skin.add("over_label", overLabelStyle);
 	}
 }
