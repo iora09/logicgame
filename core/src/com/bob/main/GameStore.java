@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.XmlReader;
 import com.bob.game.FileChooser;
 import com.bob.game.database.Database;
 import com.bob.game.database.LocalDatabase;
@@ -58,9 +57,11 @@ public class GameStore extends Group {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (logInGroup.hit(x, y, true) == null) {
+                    removeError(logInGroup);
                     logInGroup.setVisible(false);
                 }
                 if (registerGroup.hit(x, y, true) == null) {
+                    removeError(registerGroup);
                     registerGroup.setVisible(false);
                 }
                 return false;
@@ -135,43 +136,52 @@ public class GameStore extends Group {
         Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM games");
         gamesGroup.clearChildren();
+        ScrollPane allGamesPane = new ScrollPane(null, skin, "scroll");
+        allGamesPane.setBounds(10, 80, 800, 800);
+        allGamesPane.setScrollingDisabled(true,false);
+        Group allGames = new Group();
+        allGames.setBounds(10,80,800, 1500);
+        //List<Level> allGames = getAllGames();
         int x = 50;
-        int y = 700;
-        int moveY = 130;
+        int y = 1300;
+        int moveY = 200;
         try {
             while (rs.next()) {
                 String gameName = rs.getString("game_name");
                 String gameXML = rs.getString("game_xml");
-                String gameType = rs.getString("game_type");
-                addGame(gameName, gameXML, skin, x, y);
+                String gameOwner = rs.getString("game_user");
+                addGame(allGames, gameName, gameXML, gameOwner, skin, x, y);
                 y = y - moveY;
             }
             connection.close();
         } catch (SQLException e) {
             throw new RuntimeException("Could not fetch the games due to an sql error: " + e);
         }
+        allGamesPane.setWidget(allGames);
+        gamesGroup.addActor(allGamesPane);
+
+        if (loggedIn) {
+
+        }
     }
 
-    private void addGame(String gameName, String gameXML, Skin skin, int x, int y) {
+    private void addGame(Group group, String gameName, String gameXML, String gameOwner, Skin skin, int x, int y) {
         //Image gameImage = new Image();
         TextButton gameImage = new TextButton("PLAY", skin, "big_grey_button");
-        gameImage.setBounds(x, y, 200, 100);
-        XmlReader xmlReader = new XmlReader();
-        XmlReader.Element root = xmlReader.parse(gameXML);
-        String gameType = root.getAttribute("type");
-        final Level level = LevelFactory.createLevel(root.getAttribute("type"), root, gameName);
+        gameImage.setBounds(x, y, 200, 150);
+        final Level level = LevelFactory.createLevel(gameXML, gameName);
         gameImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent ie, float x, float y) {
                 Menu.launchLevel(level);
             }
         });
-        Label.LabelStyle infoStyle = new Label.LabelStyle();
-        infoStyle.font = skin.getFont("white");
-        Label infoLabel = new Label("Name : " +gameName + "\n" + "Type : " + gameType, infoStyle);
-        infoLabel.setBounds(x + 210, y, 200, 100);
-        gamesGroup.addActor(gameImage);
-        gamesGroup.addActor(infoLabel);
+        Label infoLabel = new Label("Name : " +gameName + "\n"
+                + "Type : " + level.getType() + "\n"
+                + "Created by : " + gameOwner, skin, "info_label");
+        infoLabel.setBounds(x + 210, y, 200, 150);
+        group.addActor(gameImage);
+        group.addActor(infoLabel);
     }
 
     private void insertIntoDatabase(FileHandle fileHandle) {
@@ -189,7 +199,7 @@ public class GameStore extends Group {
                     + xmlString
                     + "'"
                     + ","
-                    + "'READ') ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_type = 'READ'");
+                    + "'READ') ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_user = 'READ'");
 
             connection.close();
         } catch(SQLException e) { 
@@ -274,6 +284,7 @@ public class GameStore extends Group {
             } else {
                 addError("Username or password not recognised!", logInGroup, skin);
             }
+            connection.close();
         } catch (SQLException e) {
             throw new RuntimeException("Can't log in due to a SQL error: ", e);
         }
@@ -352,6 +363,7 @@ public class GameStore extends Group {
                         + "')");
                 removeError(registerGroup);
                 registerGroup.setVisible(false);
+                connection.close();
             } catch (SQLException e) {
                 if (e instanceof SQLIntegrityConstraintViolationException) {
                     if (e.getMessage().contains("PRIMARY")) {

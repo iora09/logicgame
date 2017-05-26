@@ -16,11 +16,13 @@ public abstract class Level {
     protected String[] hints;
     protected String text;
     protected String levelName;
+    protected String type = "";
 
     protected Level next;
 
     public Level(XmlReader.Element root, String levelName) {
         this.levelName = levelName;
+        this.type = root.getAttribute("type");
         XmlReader.Element bobNode = root.getChildByName("bob");
 
         this.floor = csvToArray(root.getChildByName("floor").getText());
@@ -104,6 +106,10 @@ public abstract class Level {
 
     public String[] getHints() {
         return hints;
+    }
+
+    public String getType() {
+        return type;
     }
 
     private int[][] csvToArray(String csv) {

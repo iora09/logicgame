@@ -119,6 +119,12 @@ public class LevelFactory {
         }
     }
 
+    public static Level createLevel(String gameXml, String gameName) {
+        XmlReader xmlReader = new XmlReader();
+        XmlReader.Element root = xmlReader.parse(gameXml);
+        return createLevel(root.getAttribute("type"), root, gameName);
+    }
+
     private static void setNextInList(List<Level> levels, int nextIndex) {
         if (nextIndex > 0) {
             levels.get(nextIndex - 1).setNext(levels.get(nextIndex));

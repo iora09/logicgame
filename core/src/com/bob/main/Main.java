@@ -6,10 +6,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -120,6 +121,11 @@ public class Main extends ApplicationAdapter {
 		whiteFont.getData().scale(-0.2f);
 		skin.add("white", whiteFont);
 
+		BitmapFont smallWhiteFont = new BitmapFont(Gdx.files.internal("font/white.fnt"));
+		smallWhiteFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		smallWhiteFont.getData().scale(-0.4f);
+		skin.add("small_white", smallWhiteFont);
+
 		BitmapFont impactFont = new BitmapFont(Gdx.files.internal("font/impact.fnt"));
 		impactFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		skin.add("impact", impactFont);
@@ -167,5 +173,15 @@ public class Main extends ApplicationAdapter {
 		overLabelStyle.fontColor = Color.WHITE;
 		overLabelStyle.font = skin.getFont("default");
 		skin.add("over_label", overLabelStyle);
+
+		Label.LabelStyle infoStyle = new Label.LabelStyle();
+		infoStyle.font = skin.getFont("small_white");
+		skin.add("info_label", infoStyle);
+
+		ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
+		scrollPaneStyle.background
+				= new TextureRegionDrawable(
+						new TextureRegion(TextureFactory.createTexture("screens/transparent.png")));
+		skin.add("scroll", scrollPaneStyle);
 	}
 }
