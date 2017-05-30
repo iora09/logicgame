@@ -26,6 +26,7 @@ public class User {
     }
 
     public void populateGames() {
+        games.clear();
         Database db = new LocalDatabase();
         Connection connection = db.connect(((LocalDatabase) db).getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM games JOIN users ON games.game_user = users.username " +
@@ -40,5 +41,9 @@ public class User {
         } catch (SQLException e) {
             throw new RuntimeException("Couldn't retrieve user's games due to SQL error: ", e);
         }
+    }
+
+    public List<Level> getGames(){
+        return games;
     }
 }

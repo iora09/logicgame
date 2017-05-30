@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
+import java.util.List;
 
 
 public class GameStore extends Group {
@@ -36,12 +38,11 @@ public class GameStore extends Group {
     }
 
     public void init(Skin skin, boolean visibility) {
+        this.clear();
         Image background = new Image(TextureFactory.createTexture("screens/games_store.png"));
         background.setBounds(0,0, 1920, 1080);
         this.addActor(background);
         Menu.addBackButton(skin, this);
-        initLevelsFromDb(skin);
-        this.addActor(gamesGroup);
         addImportButton(skin);
         if (loggedIn) {
             addLogOutButton(skin);
@@ -52,7 +53,6 @@ public class GameStore extends Group {
         this.addActor(logInGroup);
         initRegisterGroup(skin);
         this.addActor(registerGroup);
-        gamesGroup.setVisible(true);
         this.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -67,6 +67,9 @@ public class GameStore extends Group {
                 return false;
             }
         });
+        initLevelsFromDb(skin);
+        this.addActor(gamesGroup);
+        gamesGroup.setVisible(true);
         this.setVisible(visibility);
     }
 
@@ -104,24 +107,29 @@ public class GameStore extends Group {
         importButton.setBounds(1600, 15, 200, 60);
         importButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
-                FileChooser fileChooser = new FileChooser("Choose game to import", skin) {
-                    @Override
-                    protected void result(Object object) {
-                        if (object.equals("OK")) {
-                            FileHandle fileHandle = getFile();
-                            if (fileHandle != null && fileHandle.exists() && !fileHandle.isDirectory()
-                                    && fileHandle.extension().equals("xml")) {
-                                insertIntoDatabase(fileHandle);
-                                initLevelsFromDb(skin);
-                            } else if (object.equals("Cancel")) {
-                                this.setVisible(false);
+                if (loggedIn) {
+                    FileChooser fileChooser = new FileChooser("Choose game to import", skin) {
+                        @Override
+                        protected void result(Object object) {
+                            if (object.equals("OK")) {
+                                FileHandle fileHandle = getFile();
+                                if (fileHandle != null && fileHandle.exists() && !fileHandle.isDirectory()
+                                        && fileHandle.extension().equals("xml")) {
+                                    insertIntoDatabase(fileHandle);
+                                    user.populateGames();
+                                    initLevelsFromDb(skin);
+                                } else if (object.equals("Cancel")) {
+                                    this.setVisible(false);
+                                }
                             }
                         }
-                    }
-                };
-                fileChooser.setDirectory(new FileHandle(Gdx.files.getExternalStoragePath()));
-                fileChooser.setBounds(1400, 100, 400, 400);
-                addFileChooser(fileChooser);
+                    };
+                    fileChooser.setDirectory(new FileHandle(Gdx.files.getExternalStoragePath()));
+                    fileChooser.setBounds(1400, 100, 400, 400);
+                    addFileChooser(fileChooser);
+                } else {
+                    logInGroup.setVisible(true);
+                }
             }
         });
         this.addActor(importButton);
@@ -132,56 +140,53 @@ public class GameStore extends Group {
     }
 
     public void initLevelsFromDb(Skin skin) {
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
-        ResultSet rs = db.selectQuery(connection, "SELECT * FROM games");
         gamesGroup.clearChildren();
-        ScrollPane allGamesPane = new ScrollPane(null, skin, "scroll");
-        allGamesPane.setBounds(10, 80, 800, 800);
-        allGamesPane.setScrollingDisabled(true,false);
-        Group allGames = new Group();
-        allGames.setBounds(10,80,800, 1500);
-        //List<Level> allGames = getAllGames();
-        int x = 50;
-        int y = 1300;
-        int moveY = 200;
-        try {
-            while (rs.next()) {
-                String gameName = rs.getString("game_name");
-                String gameXML = rs.getString("game_xml");
-                String gameOwner = rs.getString("game_user");
-                addGame(allGames, gameName, gameXML, gameOwner, skin, x, y);
-                y = y - moveY;
-            }
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not fetch the games due to an sql error: " + e);
+        Label allGamesLabel = new Label("All Games:", skin, "label_style");
+        allGamesLabel.setBounds(50,870,100, 50);
+        gamesGroup.addActor(allGamesLabel);
+        List<Level> allGames = getAllGames();
+        Table allGamesTable = new Table(skin);
+        for(Level game : allGames) {
+            addGame(allGamesTable, game, game.getOwner(), skin);
+            allGamesTable.row();
         }
-        allGamesPane.setWidget(allGames);
+        ScrollPane allGamesPane = new ScrollPane(null, skin, "scroll");
+        allGamesPane.setBounds(10, 80, 600, 750);
+        allGamesPane.setScrollingDisabled(true,false);
+        allGamesPane.setWidget(allGamesTable);
         gamesGroup.addActor(allGamesPane);
 
         if (loggedIn) {
-
+            Label usersGamesLabel = new Label("Your games:", skin, "label_style");
+            usersGamesLabel.setBounds(1000,870,100, 50);
+            gamesGroup.addActor(usersGamesLabel);
+            List<Level> usersGames = user.getGames();
+            Table usersGamesTable = new Table(skin);
+            for(Level game : usersGames) {
+                addGame(usersGamesTable, game, user.getUsername(), skin);
+                usersGamesTable.row();
+            }
+            ScrollPane usersGamesPane = new ScrollPane(null, skin, "scroll");
+            usersGamesPane.setBounds(1000, 80, 600, 750);
+            usersGamesPane.setScrollingDisabled(true, false);
+            usersGamesPane.setWidget(usersGamesTable);
+            gamesGroup.addActor(usersGamesPane);
         }
     }
 
-    private void addGame(Group group, String gameName, String gameXML, String gameOwner, Skin skin, int x, int y) {
-        //Image gameImage = new Image();
+    private void addGame(Table table, final Level game, String owner, Skin skin) {
         TextButton gameImage = new TextButton("PLAY", skin, "big_grey_button");
-        gameImage.setBounds(x, y, 200, 150);
-        final Level level = LevelFactory.createLevel(gameXML, gameName);
         gameImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent ie, float x, float y) {
-                Menu.launchLevel(level);
+                Menu.launchLevel(game);
             }
         });
-        Label infoLabel = new Label("Name : " +gameName + "\n"
-                + "Type : " + level.getType() + "\n"
-                + "Created by : " + gameOwner, skin, "info_label");
-        infoLabel.setBounds(x + 210, y, 200, 150);
-        group.addActor(gameImage);
-        group.addActor(infoLabel);
+        Label infoLabel = new Label("Name : " + game.getLevelName() + "\n"
+                + "Type : " + game.getType() + "\n"
+                + "Created by : " + owner, skin, "info_label");
+        table.add(gameImage).width(200).height(150).expandX().padBottom(30);
+        table.add(infoLabel).width(350).height(150).padBottom(30);
     }
 
     private void insertIntoDatabase(FileHandle fileHandle) {
@@ -199,7 +204,10 @@ public class GameStore extends Group {
                     + xmlString
                     + "'"
                     + ","
-                    + "'READ') ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_user = 'READ'");
+                    + "'"
+                    + user.getUsername()
+                    + "'"
+                    + ") ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_user = '" + user.getUsername() + "'");
 
             connection.close();
         } catch(SQLException e) { 
@@ -381,4 +389,24 @@ public class GameStore extends Group {
         }
     }
 
+    public List<Level> getAllGames() {
+        Database db = new LocalDatabase();
+        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        ResultSet rs = db.selectQuery(connection, "SELECT * FROM games");
+        List<Level> allGames = new ArrayList<>();
+        try {
+            while (rs.next()) {
+                String gameName = rs.getString("game_name");
+                String gameXML = rs.getString("game_xml");
+                String gameOwner = rs.getString("game_user");
+                Level newLevel = LevelFactory.createLevel(gameXML, gameName);
+                newLevel.setOwner(gameOwner);
+                allGames.add(newLevel);
+            }
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not fetch the games due to an sql error: " + e);
+        }
+        return allGames;
+    }
 }

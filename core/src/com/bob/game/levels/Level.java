@@ -17,6 +17,7 @@ public abstract class Level {
     protected String text;
     protected String levelName;
     protected String type = "";
+    protected String owner = "";
 
     protected Level next;
 
@@ -153,5 +154,13 @@ public abstract class Level {
         }
 
         return res;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 }
