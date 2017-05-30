@@ -32,6 +32,7 @@ public class GameStore extends Group {
     private final Group gamesGroup = new Group();
     private final Group logInGroup = new Group();
     private final Group registerGroup = new Group();
+    private final Group gameOptionsGroup = new Group();
     private Label errorLabel;
 
     public GameStore() {
@@ -53,6 +54,10 @@ public class GameStore extends Group {
         this.addActor(logInGroup);
         initRegisterGroup(skin);
         this.addActor(registerGroup);
+        initLevelsFromDb(skin);
+        this.addActor(gamesGroup);
+        gamesGroup.setVisible(true);
+        this.addActor(gameOptionsGroup);
         this.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -64,12 +69,12 @@ public class GameStore extends Group {
                     removeError(registerGroup);
                     registerGroup.setVisible(false);
                 }
+                if (gameOptionsGroup.hit(x, y, true) == null) {
+                    gameOptionsGroup.setVisible(false);
+                }
                 return false;
             }
         });
-        initLevelsFromDb(skin);
-        this.addActor(gamesGroup);
-        gamesGroup.setVisible(true);
         this.setVisible(visibility);
     }
 
@@ -174,19 +179,71 @@ public class GameStore extends Group {
         }
     }
 
-    private void addGame(Table table, final Level game, String owner, Skin skin) {
-        TextButton gameImage = new TextButton("PLAY", skin, "big_grey_button");
+    private void addGame(Table table, final Level game, final String owner, final Skin skin) {
+        TextButton gameImage = new TextButton(game.getLevelName(), skin, "big_grey_button");
         gameImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent ie, float x, float y) {
-                Menu.launchLevel(game);
+                if (user != null && (user.getUsername().equals(owner) || user.getUsername().equals("admin"))) {
+                    createAndShowGameOptions(game, skin);
+                } else {
+                    Menu.launchLevel(game);
+                }
             }
         });
-        Label infoLabel = new Label("Name : " + game.getLevelName() + "\n"
-                + "Type : " + game.getType() + "\n"
+        Label infoLabel = new Label("Type : " + game.getType() + "\n"
                 + "Created by : " + owner, skin, "info_label");
         table.add(gameImage).width(200).height(150).expandX().padBottom(30);
         table.add(infoLabel).width(350).height(150).padBottom(30);
+    }
+
+    private void createAndShowGameOptions(final Level game, final Skin skin) {
+        gameOptionsGroup.clearChildren();
+        Image gameOptionsPanel = new Image(TextureFactory.createTexture("screens/modal.png"));
+        gameOptionsPanel.setBounds(640, 400, 600, 380);
+        gameOptionsGroup.addActor(gameOptionsPanel);
+
+        TextButton playButton = new TextButton("PLAY", skin, "big_grey_button");
+        TextButton editButton = new TextButton("EDIT", skin, "big_grey_button");
+        TextButton deleteButton = new TextButton("DELETE", skin, "big_grey_button");
+
+        playButton.setBounds(800, 640, 250, 100);
+        editButton.setBounds(800, 530, 250, 100);
+        deleteButton.setBounds(800, 420, 250, 100);
+
+        playButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameOptionsGroup.setVisible(false);
+                Menu.launchLevel(game);
+            }
+        });
+
+        deleteButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameOptionsGroup.setVisible(false);
+                deleteFromDatabase(game, skin);
+            }
+        });
+
+        gameOptionsGroup.addActor(playButton);
+        gameOptionsGroup.addActor(editButton);
+        gameOptionsGroup.addActor(deleteButton);
+        gameOptionsGroup.setVisible(true);
+    }
+
+    private void deleteFromDatabase(Level game, Skin skin) {
+        Database db = new LocalDatabase();
+        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        try {
+            db.otherQuery(connection, "DELETE FROM games WHERE game_name='" + game.getLevelName() + "'");
+            user.populateGames();
+            initLevelsFromDb(skin);
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Cannot delete game due to SQL error :" + e);
+        }
     }
 
     private void insertIntoDatabase(FileHandle fileHandle) {
