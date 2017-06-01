@@ -3,6 +3,8 @@ package com.bob.game.levels;
 import com.badlogic.gdx.utils.XmlReader;
 import com.bob.game.inputs.Block;
 
+import java.util.Map;
+
 public abstract class Level {
 
     protected int[][] floor;
@@ -12,6 +14,7 @@ public abstract class Level {
     protected int noRules;
     protected Block[] inputs;
     protected Block[][] rules;
+    protected Map<Block[], Boolean> choices;
     protected String[] tutorialImages;
     protected String[] hints;
     protected String text;
@@ -144,13 +147,17 @@ public abstract class Level {
     }
 
     protected Block[] extractBlocks(XmlReader.Element blockContainer) {
+       return extractBlocksFromPosition(blockContainer, 0);
+    }
+
+    protected Block[] extractBlocksFromPosition(XmlReader.Element blockContainer, int pos) {
         if (blockContainer == null) return new Block[0];
 
         int n = blockContainer.getChildCount();
-        Block[] res = new Block[n];
+        Block[] res = new Block[n - pos];
 
-        for(int i = 0; i < n; i++) {
-            res[i] = Block.getBlock(blockContainer.getChild(i).getAttribute("name"));
+        for(int i = pos; i < n; i++) {
+            res[i - pos] = Block.getBlock(blockContainer.getChild(i).getAttribute("name"));
         }
 
         return res;

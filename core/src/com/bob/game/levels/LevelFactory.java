@@ -14,6 +14,7 @@ public class LevelFactory {
     public static final List<Level> WRITE = new ArrayList<>();
     public static final List<Level> READ = new ArrayList<>();
     public static final List<Level> MACRO = new ArrayList<>();
+    public static final List<Level> TUTORIAL = new ArrayList<>();
 
     public static void initialiseLevels() {
         populateWrite();

@@ -408,6 +408,7 @@ public class GameStore extends Group {
 
     private void tryRegistering(String username, String password, String email, Skin skin) {
         if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+            removeError(registerGroup);
             addError("All fields must be completed!", registerGroup, skin);
         } else if (EmailValidator.getInstance().isValid(email)){
             String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();

@@ -46,18 +46,6 @@ public class InputsLayer extends Layer {
         skin.add("red_light", TextureFactory.createTexture("lights/red.png"));
         skin.add("green_light", TextureFactory.createTexture("lights/green.png"));
         skin.add("target", TextureFactory.createTexture("blocks/target.png"));
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new BitmapFont();
-
-        // DRAG N DROP
-        TextTooltip.TextTooltipStyle tooltipStyle = new TextTooltip.TextTooltipStyle();
-        skin.add("tooltip_bkg", TextureFactory.createTexture("blocks/tooltip.png"));
-        tooltipStyle.label = labelStyle;
-
-        tooltipStyle.background = skin.getDrawable("tooltip_bkg");
-
-        skin.add("tooltipStyle", tooltipStyle);
     }
 
     public List<DragAndDrop.Target> getTargets() {

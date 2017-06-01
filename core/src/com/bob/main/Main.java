@@ -39,7 +39,7 @@ public class Main extends ApplicationAdapter {
 
 		skin.add("font", new BitmapFont());
 
-		addButtonStyle();
+		addAllStyles();
 
 		OrthographicCamera camera = new OrthographicCamera();
 		Viewport viewport = new FitViewport(1920,1080,camera);
@@ -114,7 +114,7 @@ public class Main extends ApplicationAdapter {
 		gameState = GameState.PLAYING;
 	}
 
-	private void addButtonStyle() {
+	private void addAllStyles() {
 
 		BitmapFont whiteFont = new BitmapFont(Gdx.files.internal("font/white.fnt"));
 		whiteFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -183,5 +183,18 @@ public class Main extends ApplicationAdapter {
 				= new TextureRegionDrawable(
 						new TextureRegion(TextureFactory.createTexture("screens/transparent.png")));
 		skin.add("scroll", scrollPaneStyle);
+
+		Label.LabelStyle toolLabelStyle = new Label.LabelStyle();
+		toolLabelStyle.font = new BitmapFont();
+		toolLabelStyle.font.getData().scale(0.3f);
+
+		// DRAG N DROP
+		TextTooltip.TextTooltipStyle tooltipStyle = new TextTooltip.TextTooltipStyle();
+		skin.add("tooltip_bkg", TextureFactory.createTexture("blocks/tooltip.png"));
+		tooltipStyle.label = toolLabelStyle;
+
+		tooltipStyle.background = skin.getDrawable("tooltip_bkg");
+
+		skin.add("tooltipStyle", tooltipStyle);
 	}
 }
