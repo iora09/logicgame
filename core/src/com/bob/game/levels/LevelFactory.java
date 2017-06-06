@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.XmlReader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PipedInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,7 @@ public class LevelFactory {
         populateWrite();
         populateRead();
         populateMacro();
+        populateTutorials();
     }
 
     private static void populateWrite() {
@@ -38,6 +38,13 @@ public class LevelFactory {
 
     private static void populateMacro() {
         File folder = new File("levels/macro");
+        for (final File file : folder.listFiles()) {
+            loadInternalLevel(file.getPath());
+        }
+    }
+
+    private static void populateTutorials() {
+        File folder = new File("levels/tutorials");
         for (final File file : folder.listFiles()) {
             loadInternalLevel(file.getPath());
         }
@@ -107,6 +114,19 @@ public class LevelFactory {
                 setNextInList(MACRO, index);
                 return MACRO.get(index);
             }
+
+            case "TUTORIAL": {
+                int index = getReplaceIndex(TUTORIAL, name);
+                if (index >= 0) {
+                    TUTORIAL.set(index, new TutorialLevel(root, name));
+
+                } else {
+                    TUTORIAL.add(new TutorialLevel(root, name));
+                    index = TUTORIAL.size() - 1;
+                }
+                setNextInList(TUTORIAL, index);
+                return TUTORIAL.get(index);
+            }
             default: return null;
         }
     }
@@ -116,6 +136,7 @@ public class LevelFactory {
             case "READ" : return new ReadLevel(root, name);
             case "WRITE" : return new WriteLevel(root, name);
             case "MACRO" : return new MacroLevel(root, name);
+            case "TUTORIAL" : return new TutorialLevel(root, name);
             default: return null;
         }
     }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class InputsManager {
 
-    private Rule[] rules;
+    protected Rule[] rules;
     private InputsLayer layer;
 
     public InputsManager() {
@@ -97,7 +97,7 @@ public class InputsManager {
         setupRuleView(noRules, false);
     }
 
-    private void setupRuleView(int noRules, boolean draggable) {
+    protected void setupRuleView(int noRules, boolean draggable) {
         for (int i = 0; i < rules.length; i++) {
             if (i < noRules) {
                 layer.addTargets(rules[i].getTargets());

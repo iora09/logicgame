@@ -79,7 +79,7 @@ public class Menu {
 
     private Map<String,Button> addButtons(Group group, Skin skin, String[] names) {
         Map<String, Button> buttons = new HashMap<>();
-        int menuButtonY = 430;
+        int menuButtonY = 500;
 
         for (String buttonName : names) {
 
@@ -89,7 +89,7 @@ public class Menu {
             buttons.put(buttonName, button);
             group.addActor(button);
 
-            menuButtonY -= 125;
+            menuButtonY -= 120;
         }
 
         return buttons;
@@ -108,7 +108,7 @@ public class Menu {
         startLabel.setBounds(1185, 430, 400, 100);
         modeGroup.addActor(startLabel);
 
-        String[] menu = {"WRITER", "READER", "MACRO", "GAME STORE"};
+        String[] menu = {"WRITER", "READER", "MACRO", "TUTORIALS", "GAME STORE"};
         Map<String, Button> buttons = addButtons(modeGroup, skin, menu);
 
         buttons.get("WRITER").addListener(new ClickListener() {
@@ -150,6 +150,20 @@ public class Menu {
             }
         });
 
+        buttons.get("TUTORIALS").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                int lvlIndex = 0;
+
+                if (Config.levelsAreLocked) {
+                    Preferences prefs = Gdx.app.getPreferences("Progress");
+                    lvlIndex = prefs.getInteger("readProgress", -1) + 1;
+                }
+
+                launchLevel(lvlIndex < LevelFactory.TUTORIAL.size() ? LevelFactory.TUTORIAL.get(lvlIndex) : LevelFactory.TUTORIAL.get(0));
+            }
+        });
+
         buttons.get("GAME STORE").addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
                 ((GameStore)gameStoreGroup).initLevelsFromDb(skin);
@@ -179,6 +193,7 @@ public class Menu {
                        prefs.putInteger("writeProgress", -1);
                        prefs.putInteger("readProgress", -1);
                        prefs.putInteger("macroProgress", -1);
+                       prefs.putInteger("tutorialProgress", -1);
                    }
                }
         );
@@ -200,9 +215,10 @@ public class Menu {
         levelsBkg.setBounds(0,0, 1920, 1080);
         levelsGroup.addActor(levelsBkg);
 
-        addLevelButtons(skin, LevelFactory.WRITE, "writeProgress", "Write", 430);
-        addLevelButtons(skin, LevelFactory.READ, "readProgress", "Read", 300);
-        addLevelButtons(skin, LevelFactory.MACRO, "macroProgress", "Macro", 170);
+        addLevelButtons(skin, LevelFactory.WRITE, "writeProgress", "Write", 530);
+        addLevelButtons(skin, LevelFactory.READ, "readProgress", "Read", 400);
+        addLevelButtons(skin, LevelFactory.MACRO, "macroProgress", "Macro", 270);
+        addLevelButtons(skin, LevelFactory.TUTORIAL, "tutorialProgress", "Tutorials", 140);
 
         addBackButton(skin, levelsGroup);
 
@@ -214,7 +230,7 @@ public class Menu {
         int levelsButtonX = 660;
         int levelsButtonY = startY;
 
-        Texture lockTexture = TextureFactory.createTexture("buttons/lock.png");
+        Texture lockTexture;
 
         Label.LabelStyle titleStyle = new Label.LabelStyle();
         titleStyle.font = skin.getFont("impact");

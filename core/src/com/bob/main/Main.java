@@ -110,7 +110,7 @@ public class Main extends ApplicationAdapter {
 	protected void startLevel(Level lvl) {
 		gameController.setLevel(lvl);
 		gameController.show();
-		gameController.startNewLevel();
+		gameController.startNewLevel(skin);
 		gameState = GameState.PLAYING;
 	}
 

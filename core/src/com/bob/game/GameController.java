@@ -18,6 +18,7 @@ public class GameController {
     private final InputsManager inputsManager;
     private final MacroManager macroManager;
     private final WorldController worldController;
+    private final ChoicesManager choicesManager;
     private int currentHint = 0;
 
     public GameController(Skin skin, OrthographicCamera camera) {
@@ -32,10 +33,12 @@ public class GameController {
         layerGroup.add("winning", new WinningLayer(skin, this));
         layerGroup.add("message", new MessageLayer(skin, this));
         layerGroup.add("help screen", new HelpScreen(skin));
+        layerGroup.add("tutorial", new InputsLayer(skin));
 
         inputsManager = new InputsManager();
         macroManager = new MacroManager();
         worldController = new WorldController();
+        choicesManager = new ChoicesManager();
 
         worldController.setCamera(camera);
 
@@ -45,6 +48,9 @@ public class GameController {
         macroManager.setLayers((MacroLayer)layerGroup.get("macro"), (ModalLayer)layerGroup.get("modal_inputs"));
         macroManager.initView(skin);
         macroManager.addButtons(skin);
+
+        choicesManager.setLayer(((InputsLayer)layerGroup.get("tutorial")));
+        choicesManager.initRuleView(skin, 1475, 1080-495);
     }
 
     public void reset() {
@@ -55,7 +61,7 @@ public class GameController {
         resetWorld();
     }
 
-    public void startNewLevel() {
+    public void startNewLevel(Skin skin) {
 
         currentHint = 0;
 
@@ -75,6 +81,13 @@ public class GameController {
             macroManager.resetMacros();
             macroManager.resetMacroInputs();
 
+        } else if (currentLevel.allowTutorial()){
+            ((BackgroundLayer)layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
+            layerGroup.setVisibility("macro", false);
+            layerGroup.setVisibility("inputs", false);
+            layerGroup.setVisibility("tutorial", true);
+            choicesManager.setupChoices(currentLevel.getChoices());
+            choicesManager.setupRules(currentLevel.getNoRules(), skin, 1475, 1080-495);
         } else {
             layerGroup.setVisibility("macro", false);
             layerGroup.setVisibility("inputs", true);
@@ -121,12 +134,12 @@ public class GameController {
         this.currentLevel = level;
     }
 
-    public void loadNextLevel() {
+    public void loadNextLevel(Skin skin) {
         if (currentLevel.getNext() == null) { // Mode completed, back to menu
             hide();
         } else {
             currentLevel = currentLevel.getNext();
-            startNewLevel();
+            startNewLevel(skin);
         }
 
         layerGroup.setVisibility("winning", false);

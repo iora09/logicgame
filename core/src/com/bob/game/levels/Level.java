@@ -7,10 +7,10 @@ import java.util.Map;
 
 public abstract class Level {
 
-    protected int[][] floor;
+    private int[][] floor;
     protected int[][] objects;
-    protected int coordX;
-    protected int coordY;
+    private int coordX;
+    private int coordY;
     protected int noRules;
     protected Block[] inputs;
     protected Block[][] rules;
@@ -53,6 +53,10 @@ public abstract class Level {
     }
 
     public Boolean allowMacro() {
+        return false;
+    }
+
+    public Boolean allowTutorial() {
         return false;
     }
 
@@ -114,6 +118,10 @@ public abstract class Level {
 
     public String getType() {
         return type;
+    }
+
+    public Map<Block[], Boolean> getChoices() {
+        return choices;
     }
 
     private int[][] csvToArray(String csv) {

@@ -180,7 +180,7 @@ public class GameStore extends Group {
     }
 
     private void addGame(Table table, final Level game, final String owner, final Skin skin) {
-        TextButton gameImage = new TextButton(game.getLevelName(), skin, "big_grey_button");
+        Image gameImage = new Image(TextureFactory.createTexture("thumbs/bob.png"));
         gameImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent ie, float x, float y) {
@@ -191,7 +191,7 @@ public class GameStore extends Group {
                 }
             }
         });
-        Label infoLabel = new Label("Type : " + game.getType() + "\n"
+        Label infoLabel = new Label("Name : " + game.getLevelName() + "\n" + "Type : " + game.getType() + "\n"
                 + "Created by : " + owner, skin, "info_label");
         table.add(gameImage).width(200).height(150).expandX().padBottom(30);
         table.add(infoLabel).width(350).height(150).padBottom(30);
@@ -235,7 +235,7 @@ public class GameStore extends Group {
 
     private void deleteFromDatabase(Level game, Skin skin) {
         Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
         try {
             db.otherQuery(connection, "DELETE FROM games WHERE game_name='" + game.getLevelName() + "'");
             user.populateGames();
@@ -248,7 +248,7 @@ public class GameStore extends Group {
 
     private void insertIntoDatabase(FileHandle fileHandle) {
         Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
         String xmlString = fileHandle.readString();
         xmlString = xmlString.replace("'", "''");
         try {
@@ -334,7 +334,7 @@ public class GameStore extends Group {
     private void tryLoggingIn(String username, String password, Skin skin) {
         String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
         Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM users "
                 + "WHERE users.username='" + username + "'"
                 + " AND "
@@ -413,7 +413,7 @@ public class GameStore extends Group {
         } else if (EmailValidator.getInstance().isValid(email)){
             String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
             Database db = new LocalDatabase();
-            Connection connection = db.connect(((LocalDatabase) db).getDataSource("mysql"));
+            Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
             try {
                 db.otherQuery(connection, "INSERT INTO users \n VALUES( "
                         + "'"
@@ -449,7 +449,7 @@ public class GameStore extends Group {
 
     public List<Level> getAllGames() {
         Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase)db).getDataSource("mysql"));
+        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM games");
         List<Level> allGames = new ArrayList<>();
         try {

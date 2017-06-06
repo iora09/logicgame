@@ -19,7 +19,7 @@ class WinningLayer extends Layer {
         nextButton.setBounds(760, 380, 400, 100);
         nextButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
-                controller.loadNextLevel();
+                controller.loadNextLevel(skin);
             }
         });
 

@@ -14,11 +14,11 @@ class BackgroundLayer extends Layer {
     private final Label text;
     private Label noLights;
     private Label maxLights;
+    private Image foreground = new Image(TextureFactory.createTexture("screens/foreground.png"));
     private Group noLightsGroup;
 
     public BackgroundLayer(Skin skin) {
         // Bkg
-        Image foreground = new Image(TextureFactory.createTexture("screens/foreground.png"));
         group.addActor(foreground);
 
         // Thumbs
@@ -78,5 +78,11 @@ class BackgroundLayer extends Layer {
         setNoLights(0);
         this.maxLights.setText(Integer.toString(maxLights));
         noLightsGroup.setVisible(maxLights > 0);
+    }
+
+    public void changeForeground(String imagePath) {
+        group.removeActor(foreground);
+        foreground = new Image(TextureFactory.createTexture(imagePath));
+        group.addActorAt(0,foreground);
     }
 }
