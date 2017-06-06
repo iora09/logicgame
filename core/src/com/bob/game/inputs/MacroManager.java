@@ -28,7 +28,7 @@ public class MacroManager {
     }
 
     public void initView(Skin skin) {
-        inputsManager.initRuleView(skin, 785, 1080 - 545);
+        inputsManager.initRuleView(skin, 785, 1080 - 545, true);
     }
 
     public void addButtons(Skin skin) {

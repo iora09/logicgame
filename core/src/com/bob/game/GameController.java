@@ -34,6 +34,8 @@ public class GameController {
         layerGroup.add("message", new MessageLayer(skin, this));
         layerGroup.add("help screen", new HelpScreen(skin));
         layerGroup.add("tutorial", new InputsLayer(skin));
+        layerGroup.add("tryAgain", new TryAgainLayer(skin, this));
+        layerGroup.add("notComplete", new NotCompleteResponseLayer(skin));
 
         inputsManager = new InputsManager();
         macroManager = new MacroManager();
@@ -43,14 +45,14 @@ public class GameController {
         worldController.setCamera(camera);
 
         inputsManager.setLayer((InputsLayer)layerGroup.get("inputs"));
-        inputsManager.initRuleView(skin, 1475, 1080 - 495);
+        inputsManager.initRuleView(skin, 1475, 1080 - 495, true);
 
         macroManager.setLayers((MacroLayer)layerGroup.get("macro"), (ModalLayer)layerGroup.get("modal_inputs"));
         macroManager.initView(skin);
         macroManager.addButtons(skin);
 
         choicesManager.setLayer(((InputsLayer)layerGroup.get("tutorial")));
-        choicesManager.initRuleView(skin, 1475, 1080-495);
+        choicesManager.initRuleView(skin, 1475, 1080-495, false);
     }
 
     public void reset() {
@@ -64,7 +66,7 @@ public class GameController {
     public void startNewLevel(Skin skin) {
 
         currentHint = 0;
-
+        ((BackgroundLayer)layerGroup.get("background")).changeForeground("screens/foreground.png");
         if (currentLevel.hasHints()) {
 
         }
@@ -88,6 +90,8 @@ public class GameController {
             layerGroup.setVisibility("tutorial", true);
             choicesManager.setupChoices(currentLevel.getChoices());
             choicesManager.setupRules(currentLevel.getNoRules(), skin, 1475, 1080-495);
+            choicesManager.setupCheckboxes(skin, currentLevel.getNoRules(),1435, 1080 - 500);
+            ((BackgroundLayer)layerGroup.get("background")).changeTutorialText(currentLevel.getTutText());
         } else {
             layerGroup.setVisibility("macro", false);
             layerGroup.setVisibility("inputs", true);
@@ -106,8 +110,7 @@ public class GameController {
     }
 
     public void render(float deltaTime) {
-
-        ((ControlsLayer)layerGroup.get("controls")).disableSubmit(!inputsManager.checkRules());
+        ((ControlsLayer) layerGroup.get("controls")).disableSubmit(!inputsManager.checkRules());
 
         inputsManager.toggleLights();
         inputsManager.lightOffRules();
@@ -150,6 +153,16 @@ public class GameController {
 
         if (currentLevel.allowMacro()) {
             startLPSAnim(macroManager.getRulesString());
+        } else if (currentLevel.allowTutorial()) {
+            choicesManager.checkChoices(1365, 1080 - 495, currentLevel.getNoRules());
+            if (choicesManager.areAllCheckedRulesCorrect()&&choicesManager.areCorrectRulesComplete()) {
+               worldController.setLevelWon();
+            } else {
+                layerGroup.setVisibility("tryAgain", true);
+                if(!choicesManager.areCorrectRulesComplete()) {
+                    layerGroup.setVisibility("notComplete", true);
+                }
+            }
         } else {
             if (inputsManager.mixedParadigmUsed()) {
                 ((HelpScreen)layerGroup.get("help screen")).setImage("screens/both_paradigm.png");
@@ -213,5 +226,9 @@ public class GameController {
 
         ((HelpScreen)layerGroup.get("help screen")).setImages(res);
         layerGroup.setVisibility("help screen", true);
+    }
+
+    public void tryAgain(Skin skin) {
+        choicesManager.resetCheckboxes();
     }
 }

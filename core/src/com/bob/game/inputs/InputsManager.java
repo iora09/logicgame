@@ -8,7 +8,7 @@ import java.util.List;
 public class InputsManager {
 
     protected Rule[] rules;
-    private InputsLayer layer;
+    protected InputsLayer layer;
 
     public InputsManager() {
         this.rules = new Rule[8];
@@ -18,10 +18,10 @@ public class InputsManager {
         }
     }
 
-    public void initRuleView(Skin skin, int startingX, int startingY) {
+    public void initRuleView(Skin skin, int startingX, int startingY, boolean lightsOn) {
 
         for (Rule rule : rules) {
-            rule.initView(layer, skin, startingX, startingY);
+            rule.initView(layer, skin, startingX, startingY, lightsOn);
             startingY -= 70;
         }
     }

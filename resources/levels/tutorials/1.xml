@@ -1,22 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root type="TUTORIAL">
 <bob x="11" y="11" />
-<rules available="1" />
-<text>The previous one was too easy...
-
-Same layout, different rules, can you guess it right?
+<rules available="4" />
+<text>
+    Check the following statements about Bob. Which ones are true?
 </text>
+<tut-text>
+    This is just a TEST tutorial, to see if everything works as intended. Let's see if this wraps around.
+</tut-text>
 <hints>
   <hint>Proceed step by step</hint>
   <hint>Look at where bob his to choose the rule</hint>
 </hints>
 <choices>
     <choice>
+        <correct value="False" />
+        <rule>
+         <block name="red" />
+         <block name="and" />
+         <block name="white_prev" />
+        </rule>
+    </choice>
+    <choice>
         <correct value="True" />
         <rule>
          <block name="red" />
          <block name="and" />
+         <block name="not" />
          <block name="red_prev" />
+        </rule>
+    </choice>
+     <choice>
+        <correct value="False" />
+        <rule>
+         <block name="white" />
+         <block name="and" />
+         <block name="not" />
+         <block name="red_prev" />
+        </rule>
+    </choice>
+    <choice>
+        <correct value="True" />
+        <rule>
+            <block name="red" />
         </rule>
     </choice>
 </choices>

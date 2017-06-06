@@ -1,6 +1,5 @@
 package com.bob.game.inputs;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
@@ -25,7 +24,7 @@ public class Rule {
         }
     }
 
-    public void initView(InputsLayer layer, Skin skin, int startingX, int startingY){
+    public void initView(InputsLayer layer, Skin skin, int startingX, int startingY, boolean lightsOn){
         //Cells
         for (int i=0; i < cells.length; ++i) {
             Image bkgImage = new Image(skin, "target");
@@ -34,13 +33,15 @@ public class Rule {
             cells[i].initView(layer, startingX + i * 60, startingY, bkgImage, skin);
         }
 
-        // Red light, green light
-        greenLight = skin.getDrawable("green_light");
-        redLight = skin.getDrawable("red_light");
+        if (lightsOn) {
+            // Red light, green light
+            greenLight = skin.getDrawable("green_light");
+            redLight = skin.getDrawable("red_light");
 
-        light = new Image(greenLight);
-        light.setBounds(startingX - 25, startingY, light.getWidth(), light.getHeight());
-        layer.addActor(light);
+            light = new Image(greenLight);
+            light.setBounds(startingX - 25, startingY, light.getWidth(), light.getHeight());
+            layer.addActor(light);
+        }
 
         // Locking pane
         lock = new Image(TextureFactory.createTexture("blocks/locked.png"));

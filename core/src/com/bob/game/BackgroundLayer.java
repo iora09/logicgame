@@ -12,6 +12,7 @@ import com.bob.main.TextureFactory;
 class BackgroundLayer extends Layer {
 
     private final Label text;
+    private final Label tutText;
     private Label noLights;
     private Label maxLights;
     private Image foreground = new Image(TextureFactory.createTexture("screens/foreground.png"));
@@ -34,6 +35,13 @@ class BackgroundLayer extends Layer {
         text = new Label("", labelStyle);
         text.setBounds(240, 945, 575, 125);
         group.addActor(text);
+
+        // Tutorial Text
+        tutText = new Label("", skin, "info_label");
+        tutText.setAlignment(Align.top);
+        tutText.setWrap(true);
+        tutText.setBounds(1400, 515, 500, 500);
+        group.addActor(tutText);
 
         // No Lights
         noLightsGroup = new Group();
@@ -84,5 +92,9 @@ class BackgroundLayer extends Layer {
         group.removeActor(foreground);
         foreground = new Image(TextureFactory.createTexture(imagePath));
         group.addActorAt(0,foreground);
+    }
+
+    public void changeTutorialText(String text) {
+        this.tutText.setText(text);
     }
 }

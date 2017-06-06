@@ -25,6 +25,10 @@ public abstract class Layer {
         group.addActor(actor);
     }
 
+    public void removeActor(Actor actor) {
+        group.removeActor(actor);
+    }
+
     public void setOpacity(float opacity) {
         Color color = group.getColor();
         color.a = opacity;

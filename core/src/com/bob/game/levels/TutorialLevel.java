@@ -15,6 +15,7 @@ public class TutorialLevel extends Level {
         super(root, levelName);
         this.choices = extractChoices(root.getChildByName("choices"));
         this.noRules = root.getChildByName("rules").getIntAttribute("available");
+        this.tutText = root.getChildByName("tut-text").getText();
     }
 
     private Map<Block[], Boolean> extractChoices(XmlReader.Element choicesElement) {

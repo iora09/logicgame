@@ -234,4 +234,8 @@ public class WorldController {
     public boolean isOnQuestionMark() {
         return mapManager.isQuestionMark(bob.getCoord());
     }
+
+    public void setLevelWon() {
+        nbWon ++;
+    }
 }

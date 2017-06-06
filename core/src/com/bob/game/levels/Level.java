@@ -18,6 +18,7 @@ public abstract class Level {
     protected String[] tutorialImages;
     protected String[] hints;
     protected String text;
+    protected String tutText;
     protected String levelName;
     protected String type = "";
     protected String owner = "";
@@ -177,5 +178,9 @@ public abstract class Level {
 
     public String getOwner() {
         return owner;
+    }
+
+    public String getTutText() {
+        return tutText;
     }
 }
