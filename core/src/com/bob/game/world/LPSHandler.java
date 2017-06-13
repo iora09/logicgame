@@ -24,8 +24,11 @@ public class LPSHandler implements InstructionStrategy {
             resetLPS();
             StringBuilder lpsString = new StringBuilder("Database {\n\tFacts {\n\t\t");
             lpsString.append(objectDescription);
-            lpsString.append("lights(0).\n\tisIn(" + x + "," + y + ").\n"); //	wasIn(" + x + "," + y + ").
-
+            lpsString.append("lights(0).\n\tisIn(" + x + "," + y + ")."); //	wasIn(" + x + "," + y + ").
+            lpsString.append("\n\tnorth(" + (x-1) + "," + y + ").");
+            lpsString.append("\n\twest(" + x + "," + (y-1) + ").");
+            lpsString.append("\n\tsouth(" + (x+1) + "," + y + ").");
+            lpsString.append("\n\teast(" + x + "," + (y+1) + ").");
             lpsString.append("\t}\n\nRules {\n\t\t");
 
             FileHandle middleScript = Gdx.files.internal("scripts/middle");

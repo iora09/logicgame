@@ -18,6 +18,15 @@ public enum Block {
     ORANGE_PREV("orange(U,V)", "orange_prev", Type.FLUENT, "If Bob was previously on a orange cell"),
     PURPLE_PREV("purple(U,V)", "purple_prev", Type.FLUENT, "If Bob was previously on a purple cell"),
 
+    //Colors NORTH
+    WHITE_NORTH("white(N,Y)", "white_north", Type.FLUENT, "If to the North of Bob there's a white cell"),
+    RED_NORTH("red(N,Y)", "red_north", Type.FLUENT, "If to the North of Bob there's a red cell"),
+    YELLOW_NORTH("yellow(N,Y)", "yellow_north", Type.FLUENT, "If to the North of Bob there's a yellow cell"),
+    GREEN_NORTH("green(N,Y)", "green_north", Type.FLUENT, "If to the North of Bob there's a green cell"),
+    ORANGE_NORTH("orange(N,Y)", "orange_north", Type.FLUENT, "If to the North of Bob there's a orange cell"),
+    PURPLE_NORTH("purple(N,Y)", "purple_north", Type.FLUENT, "If to the North of Bob there's a purple cell"),
+    WATER_NORTH("water(N,Y)", "water_north", Type.FLUENT, "If to the North of Bob there's water."),
+
     // Directions
     LEFT("goLeft", "left", Type.CONSEQUENT, "Bob should go West"),
     RIGHT("goRight", "right", Type.CONSEQUENT, "Bob should go East"),

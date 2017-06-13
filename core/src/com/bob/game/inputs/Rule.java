@@ -72,7 +72,7 @@ public class Rule {
 
     public String getString(int ruleIndex, int noLights) {
 
-        StringBuilder sb = new StringBuilder("isIn(X,Y) & wasIn(U,V) & lights(" + noLights + ") & !lightBulb(X,Y) & ");
+        StringBuilder sb = new StringBuilder("isIn(X,Y) & wasIn(U,V) & north(N,Y) & lights(" + noLights + ") & !lightBulb(X,Y) & ");
         boolean notEmpty = false;
 
         for (RuleCell c: cells) {
