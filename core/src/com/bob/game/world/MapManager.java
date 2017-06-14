@@ -126,7 +126,7 @@ public class MapManager {
                 Object type = cell.getTile().getProperties().get("type");
 
                 if (type != null){
-                    if (!type.equals("water")) sb.append(type + "(" + x + "," + y + ")." );
+                    sb.append(type + "(" + x + "," + y + ").");
                 }
             }
         }

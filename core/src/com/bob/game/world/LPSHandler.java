@@ -24,11 +24,11 @@ public class LPSHandler implements InstructionStrategy {
             resetLPS();
             StringBuilder lpsString = new StringBuilder("Database {\n\tFacts {\n\t\t");
             lpsString.append(objectDescription);
-            lpsString.append("lights(0).\n\tisIn(" + x + "," + y + ")."); //	wasIn(" + x + "," + y + ").
-            lpsString.append("\n\tnorth(" + (x-1) + "," + y + ").");
-            lpsString.append("\n\twest(" + x + "," + (y-1) + ").");
-            lpsString.append("\n\tsouth(" + (x+1) + "," + y + ").");
-            lpsString.append("\n\teast(" + x + "," + (y+1) + ").");
+            lpsString.append("lights(0).\n\t\tisIn(" + x + "," + y + ")."); //	wasIn(" + x + "," + y + ").
+            lpsString.append("\n\t\tnorth(" + x + "," + (y+1) + ").");
+            lpsString.append("\n\t\twest(" + (x-1) + "," + y + ").");
+            lpsString.append("\n\t\tsouth(" + x + "," + (y-1) + ").");
+            lpsString.append("\n\t\teast(" + (x+1) + "," + y + ").\n");
             lpsString.append("\t}\n\nRules {\n\t\t");
 
             FileHandle middleScript = Gdx.files.internal("scripts/middle");
@@ -110,7 +110,6 @@ public class LPSHandler implements InstructionStrategy {
         if (hasContradictoryInstruction(set)) {
             return EntityState.CONFUSED;
         }
-
         while (it.hasNext()) {
             Goal g = it.next();
             switch (g.getGoal().getTerm(0).toString()) {
