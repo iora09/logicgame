@@ -42,6 +42,7 @@ public class InputsManager {
 
     public void resetRules() {
         for (Rule r: rules) {
+            layer.removeActor(r.getLock());
             r.reset();
         }
     }
@@ -105,6 +106,7 @@ public class InputsManager {
                 rules[i].lock(false);
             } else {
                 rules[i].lock(true);
+                layer.addActor(rules[i].getLock());
             }
         }
     }

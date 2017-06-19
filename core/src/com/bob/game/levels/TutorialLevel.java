@@ -31,7 +31,7 @@ public class TutorialLevel extends Level {
     @Override
     public void save() {
         Preferences prefs = Gdx.app.getPreferences("Progress");
-        prefs.putInteger("tutorialProgress", LevelFactory.TUTORIAL.indexOf(this));
+        prefs.putInteger("tutorialProgress", 10);
         prefs.flush();
     }
 

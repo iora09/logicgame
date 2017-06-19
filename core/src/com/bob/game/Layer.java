@@ -25,6 +25,10 @@ public abstract class Layer {
         group.addActor(actor);
     }
 
+    public void addActorFirst(Actor actor) {
+        group.addActorAt(0,actor);
+    }
+
     public void removeActor(Actor actor) {
         group.removeActor(actor);
     }

@@ -7,11 +7,11 @@
 </text>
 <tut-text>
     The NOT block changes the truth of anything that it's placed in front of.
-    Which of these is FALSE about Bob?
+    Which of these is TRUE about Bob?
 </tut-text>
 <choices>
     <choice>
-        <correct value="False" />
+        <correct value="True" />
         <rule>
          <block name="not" />
          <block name="red" />
@@ -20,13 +20,12 @@
     <choice>
         <correct value="False" />
         <rule>
-            <block name="not" />
-            <block name="not" />
-         <block name="orange" />
+         <block name="not" />
+         <block name="water_south" />
         </rule>
     </choice>
      <choice>
-        <correct value="True" />
+        <correct value="False" />
         <rule>
          <block name="not" />
          <block name="white" />
@@ -36,7 +35,7 @@
         <correct value="True" />
         <rule>
             <block name="not" />
-            <block name="water_south" />
+            <block name="orange" />
         </rule>
     </choice>
 </choices>

@@ -18,7 +18,7 @@
         </rule>
     </choice>
     <choice>
-        <correct value="False" />
+        <correct value="True" />
         <rule>
             <block name="not" />
             <block name="not" />

@@ -26,6 +26,7 @@ public class Menu {
     private static final Group settingsGroup = new Group();
     private static final Group levelsGroup = new Group();
     private static Group gameStoreGroup = new GameStore();
+    private static Group tutorialGroup = new Group();
     private static boolean isVisible = true;
     private static Level levelSelected;
 
@@ -35,7 +36,21 @@ public class Menu {
         initLevels(skin);
         initMode(skin);
         initSettings(skin);
+        initTutorials(skin);
         ((GameStore)gameStoreGroup).init(skin, false);
+    }
+
+    private void initTutorials(Skin skin) {
+        Image tutBackground = new Image(TextureFactory.createTexture("screens/menu.png"));
+        tutBackground.setBounds(0,0, 1920, 1080);
+        tutorialGroup.addActor(tutBackground);
+
+        addLevelButtons(tutorialGroup, skin, LevelFactory.TUTORIAL_CONTROLS, "tutorialProgress", "CONTROLS", 520);
+        addLevelButtons(tutorialGroup, skin, LevelFactory.TUTORIAL_NOT, "tutorialProgress", "NEGATION", 390);
+        addLevelButtons(tutorialGroup, skin, LevelFactory.TUTORIAL_AND, "tutorialProgress", "CONJUNCTION", 260);
+        addBackButton(skin, tutorialGroup);
+
+        tutorialGroup.setVisible(false);
     }
 
     private void initMenu(final Skin skin) {
@@ -102,12 +117,6 @@ public class Menu {
 
         modeGroup.addActor(levelsBkg);
 
-        Label.LabelStyle titleStyle = new Label.LabelStyle();
-        titleStyle.font = skin.getFont("impact");
-        Label startLabel = new Label("< Start here!", titleStyle);
-        startLabel.setBounds(1185, 430, 400, 100);
-        modeGroup.addActor(startLabel);
-
         String[] menu = {"WRITER", "READER", "MACRO", "TUTORIALS", "GAME STORE"};
         Map<String, Button> buttons = addButtons(modeGroup, skin, menu);
 
@@ -153,6 +162,7 @@ public class Menu {
         buttons.get("TUTORIALS").addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                /*
                 int lvlIndex = 0;
 
                 if (Config.levelsAreLocked) {
@@ -161,6 +171,10 @@ public class Menu {
                 }
 
                 launchLevel(lvlIndex < LevelFactory.TUTORIAL.size() ? LevelFactory.TUTORIAL.get(lvlIndex) : LevelFactory.TUTORIAL.get(0));
+                */
+                tutorialGroup.clear();
+                initTutorials(skin);
+                tutorialGroup.setVisible(true);
             }
         });
 
@@ -215,17 +229,16 @@ public class Menu {
         levelsBkg.setBounds(0,0, 1920, 1080);
         levelsGroup.addActor(levelsBkg);
 
-        addLevelButtons(skin, LevelFactory.WRITE, "writeProgress", "Write", 530);
-        addLevelButtons(skin, LevelFactory.READ, "readProgress", "Read", 400);
-        addLevelButtons(skin, LevelFactory.MACRO, "macroProgress", "Macro", 270);
-        addLevelButtons(skin, LevelFactory.TUTORIAL, "tutorialProgress", "Tutorials", 140);
+        addLevelButtons(levelsGroup, skin, LevelFactory.WRITE, "writeProgress", "Write", 520);
+        addLevelButtons(levelsGroup, skin, LevelFactory.READ, "readProgress", "Read", 390);
+        addLevelButtons(levelsGroup, skin, LevelFactory.MACRO, "macroProgress", "Macro", 260);
 
         addBackButton(skin, levelsGroup);
 
         levelsGroup.setVisible(false);
     }
 
-    private void addLevelButtons(Skin skin, final List<Level> levels, String prefString, String title, int startY) {
+    private void addLevelButtons(Group group, Skin skin, final List<Level> levels, String prefString, String title, int startY) {
         int noLevels = levels.size();
         int levelsButtonX = 660;
         int levelsButtonY = startY;
@@ -238,7 +251,7 @@ public class Menu {
         titleLabel.setAlignment(Align.right);
         titleLabel.setBounds(0, startY, 640, 100);
 
-        levelsGroup.addActor(titleLabel);
+        group.addActor(titleLabel);
 
         Preferences prefs = Gdx.app.getPreferences("Progress");
         int unlocked = prefs.getInteger(prefString, -1);
@@ -255,15 +268,15 @@ public class Menu {
                 }
             });
 
-            levelsGroup.addActor(button);
+            group.addActor(button);
 
             // Disable if not unlocked
-            if (i > unlocked + 1 && Config.levelsAreLocked) {
+            /*if (i > unlocked + 1 && Config.levelsAreLocked) {
                 button.setDisabled(true);
                 Image lock = new Image(lockTexture);
                 lock.setBounds(levelsButtonX - 14, levelsButtonY - 14, 128, 128);
-                levelsGroup.addActor(lock);
-            }
+                group.addActor(lock);
+            }*/
 
 
             levelsButtonX += 125;
@@ -297,6 +310,7 @@ public class Menu {
         menuGroup.setVisible(false);
         modeGroup.setVisible(false);
         levelsGroup.setVisible(false);
+        tutorialGroup.setVisible(false);
         settingsGroup.setVisible(false);
         gameStoreGroup.setVisible(false);
         isVisible = false;
@@ -314,6 +328,7 @@ public class Menu {
         stage.addActor(menuGroup);
         stage.addActor(levelsGroup);
         stage.addActor(modeGroup);
+        stage.addActor(tutorialGroup);
         stage.addActor(settingsGroup);
         stage.addActor(gameStoreGroup);
     }

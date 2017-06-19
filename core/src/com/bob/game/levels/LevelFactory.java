@@ -13,7 +13,10 @@ public class LevelFactory {
     public static final List<Level> WRITE = new ArrayList<>();
     public static final List<Level> READ = new ArrayList<>();
     public static final List<Level> MACRO = new ArrayList<>();
-    public static final List<Level> TUTORIAL = new ArrayList<>();
+    public static final List<Level> TUTORIAL_CONTROLS = new ArrayList<>();
+    public static final List<Level> TUTORIAL_NOT = new ArrayList<>();
+    public static final List<Level> TUTORIAL_AND = new ArrayList<>();
+
 
     public static void initialiseLevels() {
         populateWrite();
@@ -116,19 +119,30 @@ public class LevelFactory {
             }
 
             case "TUTORIAL": {
-                int index = getReplaceIndex(TUTORIAL, name);
-                if (index >= 0) {
-                    TUTORIAL.set(index, new TutorialLevel(root, name));
-
-                } else {
-                    TUTORIAL.add(new TutorialLevel(root, name));
-                    index = TUTORIAL.size() - 1;
+                String tutType = root.getAttribute("tut_type");
+                switch (tutType) {
+                    case "CONTROLS" : return getTutorial(TUTORIAL_CONTROLS, name, root);
+                    case "NOT" : return getTutorial(TUTORIAL_NOT, name, root);
+                    case "AND" : return getTutorial(TUTORIAL_AND, name, root);
+                    default: return null;
                 }
-                setNextInList(TUTORIAL, index);
-                return TUTORIAL.get(index);
+
             }
             default: return null;
         }
+    }
+
+    private static Level getTutorial(List<Level> tutorials, String name, XmlReader.Element root) {
+        int index = getReplaceIndex(tutorials, name);
+        if (index >= 0) {
+            tutorials.set(index, new TutorialLevel(root, name));
+
+        } else {
+            tutorials.add(new TutorialLevel(root, name));
+            index = tutorials.size() - 1;
+        }
+        setNextInList(tutorials, index);
+        return tutorials.get(index);
     }
 
     public static Level createLevel(String type, XmlReader.Element root, String name) {

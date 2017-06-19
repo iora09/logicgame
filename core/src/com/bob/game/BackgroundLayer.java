@@ -37,7 +37,7 @@ class BackgroundLayer extends Layer {
         group.addActor(text);
 
         // Tutorial Text
-        tutText = new Label("", skin, "info_label");
+        tutText = new Label("", skin, "info_small_label");
         tutText.setAlignment(Align.top);
         tutText.setWrap(true);
         tutText.setBounds(1400, 515, 500, 500);
@@ -90,6 +90,7 @@ class BackgroundLayer extends Layer {
 
     public void changeForeground(String imagePath) {
         group.removeActor(foreground);
+        changeTutorialText("");
         foreground = new Image(TextureFactory.createTexture(imagePath));
         group.addActorAt(0,foreground);
     }

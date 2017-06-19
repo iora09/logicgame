@@ -23,7 +23,7 @@ public class ChoicesManager extends InputsManager{
 
     public void setupRules(int noRules, Skin skin, int startingX, int startingY) {
         Rule[] rules = choices.keySet().toArray(new Rule[choices.keySet().size()]);
-        for(int i = 0; i < rules.length; ++i) {
+        for(int i = 0; i < noRules; ++i) {
             this.rules[i] = rules[i];
         }
         initRuleView(skin, startingX, startingY, false);
@@ -31,6 +31,7 @@ public class ChoicesManager extends InputsManager{
     }
 
     public void setupChoices(Map<Block[], Boolean> choices) {
+        this.choices.clear();
         for(Block[] block : choices.keySet()) {
             Rule rule = new Rule();
             rule.setRuleBlocks(block);

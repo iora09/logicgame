@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root type="TUTORIAL" tut_type="NOT">
+<root type="TUTORIAL" tut_type="CONTROLS">
 <bob x="11" y="11" />
-<rules available="4" />
+<rules available="6" />
 <text>
-    NEGATION
+    Conditionals
 </text>
 <tut-text>
-    The NOT block changes the truth of anything that it's placed in front of.
-    Which of these is FALSE about Bob?
+    These blocks represent the tile on which Bob currently is.
+    Which of these are NOT true about Bob?
 </tut-text>
 <choices>
     <choice>
-        <correct value="False" />
+        <correct value="True" />
         <rule>
-         <block name="not" />
          <block name="red" />
         </rule>
     </choice>
     <choice>
+        <correct value="True" />
+        <rule>
+         <block name="green" />
+        </rule>
+    </choice>
+     <choice>
         <correct value="False" />
         <rule>
-            <block name="not" />
-            <block name="not" />
-         <block name="orange" />
+         <block name="purple" />
+        </rule>
+    </choice>
+    <choice>
+        <correct value="True" />
+        <rule>
+            <block name="white" />
+        </rule>
+    </choice>
+    <choice>
+        <correct value="True" />
+        <rule>
+            <block name="orange" />
         </rule>
     </choice>
      <choice>
         <correct value="True" />
         <rule>
-         <block name="not" />
-         <block name="white" />
-        </rule>
-    </choice>
-    <choice>
-        <correct value="True" />
-        <rule>
-            <block name="not" />
-            <block name="water_south" />
+            <block name="yellow" />
         </rule>
     </choice>
 </choices>
@@ -52,7 +59,7 @@
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,1,9,9,9,9,9,9,9,9,9,9,9,
+9,9,9,9,9,9,9,9,6,2,4,5,3,1,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
@@ -91,3 +98,4 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </object>
 </root>
+

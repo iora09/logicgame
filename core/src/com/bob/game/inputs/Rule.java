@@ -1,7 +1,9 @@
 package com.bob.game.inputs;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.bob.main.TextureFactory;
@@ -29,7 +31,16 @@ public class Rule {
         for (int i=0; i < cells.length; ++i) {
             Image bkgImage = new Image(skin, "target");
             bkgImage.setBounds(startingX + i * 60, startingY, 50, 50);
-
+            final int finalI = i;
+            bkgImage.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (InputsLayer.selected != null) {
+                        cells[finalI].setPayload(InputsLayer.selected);
+                        cells[finalI].setImage(true);
+                    }
+                }
+            });
             cells[i].initView(layer, startingX + i * 60, startingY, bkgImage, skin);
         }
 
@@ -160,5 +171,9 @@ public class Rule {
         }
 
         return blockStack;
+    }
+
+    public Image getLock() {
+        return lock;
     }
 }

@@ -89,7 +89,9 @@ public class GameController {
             layerGroup.setVisibility("inputs", false);
             layerGroup.setVisibility("tutorial", true);
             choicesManager.setupChoices(currentLevel.getChoices());
+            choicesManager.resetRules();
             choicesManager.setupRules(currentLevel.getNoRules(), skin, 1475, 1080-495);
+            choicesManager.resetCheckboxes();
             choicesManager.setupCheckboxes(skin, currentLevel.getNoRules(),1435, 1080 - 500);
             ((BackgroundLayer)layerGroup.get("background")).changeTutorialText(currentLevel.getTutText());
         } else {

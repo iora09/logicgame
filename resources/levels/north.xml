@@ -1,45 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root type="TUTORIAL" tut_type="NOT">
-<bob x="11" y="11" />
-<rules available="4" />
-<text>
-    NEGATION
+<root type="WRITE">
+<bob x="2" y="10" />
+<rules available="3" />
+<text>WOW! That was amazing!
+
+However I still have a little problem:
+I don't know how to cross that one, can you help me again?
+
+Thanks!
 </text>
-<tut-text>
-    The NOT block changes the truth of anything that it's placed in front of.
-    Which of these is FALSE about Bob?
-</tut-text>
-<choices>
-    <choice>
-        <correct value="False" />
-        <rule>
-         <block name="not" />
-         <block name="red" />
-        </rule>
-    </choice>
-    <choice>
-        <correct value="False" />
-        <rule>
-            <block name="not" />
-            <block name="not" />
-         <block name="orange" />
-        </rule>
-    </choice>
-     <choice>
-        <correct value="True" />
-        <rule>
-         <block name="not" />
-         <block name="white" />
-        </rule>
-    </choice>
-    <choice>
-        <correct value="True" />
-        <rule>
-            <block name="not" />
-            <block name="water_south" />
-        </rule>
-    </choice>
-</choices>
+<hints>
+    <hint>Two rules are enough</hint>
+    <hint>Three blocks per rule</hint>
+</hints>
+<inputs>
+    <block name="white" />
+    <block name="red" />
+    <block name="white_north" />
+    <block name="water_south" />
+    <block name="white_east" />
+    <block name="white_west" />	
+    <block name="imply" />
+    <block name="up" />
+    <block name="right" />
+    <block name="left" />
+    <block name="down" />
+</inputs>
 <floor>
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
@@ -52,10 +38,10 @@
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,1,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
+9,9,1,1,1,1,1,1,1,2,9,9,9,9,9,9,9,9,9,9,9,9,9,
+9,9,3,3,3,3,3,3,3,2,9,9,9,9,9,9,9,9,9,9,9,9,9,
+9,9,9,9,9,9,9,9,9,2,9,9,9,9,9,9,9,9,9,9,9,9,9,
+9,9,9,9,9,9,9,9,9,1,1,1,1,1,1,1,1,7,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,

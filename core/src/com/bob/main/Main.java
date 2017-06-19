@@ -126,6 +126,11 @@ public class Main extends ApplicationAdapter {
 		smallWhiteFont.getData().scale(-0.4f);
 		skin.add("small_white", smallWhiteFont);
 
+		BitmapFont smallerWhiteFont = new BitmapFont(Gdx.files.internal("font/white.fnt"));
+		smallerWhiteFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		smallerWhiteFont.getData().scale(-0.55f);
+		skin.add("smaller_white", smallerWhiteFont);
+
 		BitmapFont impactFont = new BitmapFont(Gdx.files.internal("font/impact.fnt"));
 		impactFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		skin.add("impact", impactFont);
@@ -178,6 +183,10 @@ public class Main extends ApplicationAdapter {
 		infoStyle.font = skin.getFont("small_white");
 		skin.add("info_label", infoStyle);
 
+		Label.LabelStyle infoSmallStyle = new Label.LabelStyle();
+		infoSmallStyle.font = skin.getFont("smaller_white");
+		skin.add("info_small_label", infoSmallStyle);
+
 		ScrollPane.ScrollPaneStyle scrollPaneStyle = new ScrollPane.ScrollPaneStyle();
 		scrollPaneStyle.background
 				= new TextureRegionDrawable(
@@ -196,5 +205,7 @@ public class Main extends ApplicationAdapter {
 		tooltipStyle.background = skin.getDrawable("tooltip_bkg");
 
 		skin.add("tooltipStyle", tooltipStyle);
+
+		skin.add("selected", TextureFactory.createTexture("blocks/selected.png"));
 	}
 }
