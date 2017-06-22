@@ -40,6 +40,7 @@ public class ChoicesManager extends InputsManager{
     }
 
     public void setupCheckboxes(Skin skin, int noRules, int startingX, int startingY) {
+        checkBoxList.clear();
         for (int i = 0; i < noRules; ++i) {
             CheckBox checkBox = new CheckBox(null, skin);
             checkBox.setBounds(startingX, startingY, 40, 50);

@@ -232,20 +232,11 @@ public class MapManager {
         return type.equals("question");
     }
 
-    public void addClickListeners(final CreationMode creationMode, Stage stage) {
-        for (int x = 0; x < floorLayer.getWidth(); x++) {
-            for (int y = 0; y < floorLayer.getHeight(); y++) {
-                final WorldCoordinates coord = new WorldCoordinates(x, y);
-                ClickListener listener = new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        if (Math.abs(x - coord.getScreenX()) < 50 && Math.abs(y - coord.getScreenY()) < 30 && creationMode.selected != null) {
-                                floorLayer.getCell((int)coord.getWorldX(), (int)coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
-                        }
-                    }
-                };
-                stage.addListener(listener);
-            }
-        }
+    public TiledMapTileLayer getFloorLayer() {
+        return floorLayer;
+    }
+
+    public TiledMap getMap() {
+        return map;
     }
 }

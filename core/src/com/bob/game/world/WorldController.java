@@ -2,6 +2,8 @@ package com.bob.game.world;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -240,7 +242,25 @@ public class WorldController {
         nbWon ++;
     }
 
-    public void addClickListenersToMap(CreationMode creationMode) {
-        mapManager.addClickListeners(creationMode, stage);
+    public void addClickListenersToMap(final CreationMode creationMode) {
+        final TiledMapTileLayer floorLayer = mapManager.getFloorLayer();
+        final TiledMap map = mapManager.getMap();
+        for (int x = 0; x < floorLayer.getWidth(); x++) {
+            for (int y = 0; y < floorLayer.getHeight(); y++) {
+                final WorldCoordinates coord = new WorldCoordinates(x, y);
+                ClickListener listener = new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        if (Math.abs(x - coord.getScreenX()) < 50 && Math.abs(y - coord.getScreenY()) < 30)
+                            if (creationMode.selected != null) {
+                            floorLayer.getCell((int)coord.getWorldX(), (int)coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
+                        } else if (creationMode.bobSelected) {
+                            resetBob((int) coord.getWorldX(), (int) coord.getWorldY());
+                        }
+                    }
+                };
+                stage.addListener(listener);
+            }
+        }
     }
 }
