@@ -15,6 +15,7 @@ import com.bob.game.database.LocalDatabase;
 import com.bob.game.levels.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.*;
 import java.util.List;
@@ -29,6 +30,11 @@ public class Menu {
     private static Group tutorialGroup = new Group();
     private static boolean isVisible = true;
     private static Level levelSelected;
+    private static Create createMode = Create.NOTHING;
+
+    public enum Create {
+        WRITE, READ, MACRO, NOTHING
+    }
 
     public Menu(Skin skin) {
 
@@ -60,7 +66,7 @@ public class Menu {
         menuGroup.addActor(menuBkg);
 
         // Menu button
-        String[] menu = {"PLAY", "LEVELS", "SETTINGS", "QUIT"};
+        String[] menu = {"PLAY", "LEVELS", "CREATE", "SETTINGS", "QUIT"};
 
         Map<String, Button> buttons = addButtons(menuGroup, skin, menu);
 
@@ -84,11 +90,22 @@ public class Menu {
             }
         });
 
+        buttons.get("CREATE").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                createMode = Create.READ;
+                File emptyLevelFile = new File("levels/empty.xml");
+                Level emptyLevel = LevelFactory.loadInternalLevel(emptyLevelFile.getPath());
+                launchLevel(emptyLevel);
+            }
+        });
+
         buttons.get("SETTINGS").addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
                 settingsGroup.setVisible(true);
             }
         });
+
 
     }
 

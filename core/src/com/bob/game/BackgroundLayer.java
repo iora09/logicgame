@@ -95,6 +95,12 @@ class BackgroundLayer extends Layer {
         group.addActorAt(0,foreground);
     }
 
+    public void changeForegroundInFront(String imagePath) {
+        group.removeActor(foreground);
+        foreground = new Image(TextureFactory.createTexture(imagePath));
+        group.addActor(foreground);
+    }
+
     public void changeTutorialText(String text) {
         this.tutText.setText(text);
     }

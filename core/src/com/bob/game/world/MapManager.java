@@ -1,11 +1,19 @@
 package com.bob.game.world;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.bob.main.Config;
+import com.bob.main.CreationMode;
+import com.bob.main.TextureFactory;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -222,5 +230,22 @@ public class MapManager {
         String type = this.getType(Math.round(coord.getWorldX()), Math.round(coord.getWorldY()));
 
         return type.equals("question");
+    }
+
+    public void addClickListeners(final CreationMode creationMode, Stage stage) {
+        for (int x = 0; x < floorLayer.getWidth(); x++) {
+            for (int y = 0; y < floorLayer.getHeight(); y++) {
+                final WorldCoordinates coord = new WorldCoordinates(x, y);
+                ClickListener listener = new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        if (Math.abs(x - coord.getScreenX()) < 50 && Math.abs(y - coord.getScreenY()) < 30 && creationMode.selected != null) {
+                                floorLayer.getCell((int)coord.getWorldX(), (int)coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
+                        }
+                    }
+                };
+                stage.addListener(listener);
+            }
+        }
     }
 }

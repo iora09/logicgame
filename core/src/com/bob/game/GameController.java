@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
+import com.bob.main.CreationMode;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class GameController {
     private final MacroManager macroManager;
     private final WorldController worldController;
     private final ChoicesManager choicesManager;
+    private final CreationMode creationMode;
     private int currentHint = 0;
 
     public GameController(Skin skin, OrthographicCamera camera) {
@@ -36,12 +38,13 @@ public class GameController {
         layerGroup.add("tutorial", new InputsLayer(skin));
         layerGroup.add("tryAgain", new TryAgainLayer(skin, this));
         layerGroup.add("notComplete", new NotCompleteResponseLayer(skin));
+        layerGroup.add("create", new WriteCreateLayer());
 
         inputsManager = new InputsManager();
         macroManager = new MacroManager();
         worldController = new WorldController();
         choicesManager = new ChoicesManager();
-
+        creationMode = new CreationMode();
         worldController.setCamera(camera);
 
         inputsManager.setLayer((InputsLayer)layerGroup.get("inputs"));
@@ -53,6 +56,8 @@ public class GameController {
 
         choicesManager.setLayer(((InputsLayer)layerGroup.get("tutorial")));
         choicesManager.initRuleView(skin, 1475, 1080-495, false);
+
+        creationMode.setLayer(layerGroup.get("create"));
     }
 
     public void reset() {
@@ -71,6 +76,14 @@ public class GameController {
 
         }
 
+        worldController.setupWorld(currentLevel);
+
+        if (currentLevel.getType().equals("CREATE")) {
+            worldController.addClickListenersToMap(creationMode);
+        }
+
+        worldController.initRender();
+
         if (currentLevel.hasTutorial()) {
             ((HelpScreen)layerGroup.get("help screen")).setImages(currentLevel.getTutorialImages());
             layerGroup.setVisibility("help screen", true);
@@ -79,34 +92,53 @@ public class GameController {
         if (currentLevel.allowMacro()) {
             layerGroup.setVisibility("macro", true);
             layerGroup.setVisibility("inputs", false);
+            layerGroup.setVisibility("create", false);
+            layerGroup.setVisibility("tutorial", false);
 
             macroManager.resetMacros();
             macroManager.resetMacroInputs();
 
-        } else if (currentLevel.allowTutorial()){
-            ((BackgroundLayer)layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
+        } else if (currentLevel.getType().equals("CREATE")) {
+            ((BackgroundLayer) layerGroup.get("background")).changeForegroundInFront("screens/test.png");
+
+            layerGroup.setVisibility("macro", false);
+            layerGroup.setVisibility("inputs", false);
+            layerGroup.setVisibility("tutorial", false);
+            layerGroup.setVisibility("create", true);
+
+            creationMode.createInputTiles(skin, "read");
+
+        } else if (currentLevel.allowTutorial()) {
+            ((BackgroundLayer) layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
+
+            layerGroup.setVisibility("create", false);
             layerGroup.setVisibility("macro", false);
             layerGroup.setVisibility("inputs", false);
             layerGroup.setVisibility("tutorial", true);
+
             choicesManager.setupChoices(currentLevel.getChoices());
             choicesManager.resetRules();
-            choicesManager.setupRules(currentLevel.getNoRules(), skin, 1475, 1080-495);
+            choicesManager.setupRules(currentLevel.getNoRules(), skin, 1475, 1080 - 495);
             choicesManager.resetCheckboxes();
-            choicesManager.setupCheckboxes(skin, currentLevel.getNoRules(),1435, 1080 - 500);
-            ((BackgroundLayer)layerGroup.get("background")).changeTutorialText(currentLevel.getTutText());
+            choicesManager.setupCheckboxes(skin, currentLevel.getNoRules(), 1435, 1080 - 500);
+            ((BackgroundLayer) layerGroup.get("background")).changeTutorialText(currentLevel.getTutText());
+
         } else {
+            layerGroup.setVisibility("tutorial", false);
+            layerGroup.setVisibility("create", false);
             layerGroup.setVisibility("macro", false);
             layerGroup.setVisibility("inputs", true);
 
             inputsManager.setupRules(currentLevel.getNoRules(), currentLevel.getRules(), false);
             inputsManager.setupInputs(currentLevel.getInputs(), 1415, 1080 - 165);
+
         }
 
         ((ControlsLayer)layerGroup.get("controls")).disableReset(currentLevel.allowRuleReset());
         ((ControlsLayer)layerGroup.get("controls")).disableHints(currentLevel.hasHints());
+        ((ControlsLayer)layerGroup.get("controls")).disableHelp(!currentLevel.getType().equals("CREATE"));
 
-        worldController.setupWorld(currentLevel);
-        worldController.initRender();
+
         ((BackgroundLayer)layerGroup.get("background")).changeText(currentLevel.getText());
         ((BackgroundLayer)layerGroup.get("background")).setMaxLights(worldController.getMaxObjects());
     }

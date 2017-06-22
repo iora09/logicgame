@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.Block;
 import com.bob.game.levels.Level;
+import com.bob.main.CreationMode;
 
 import java.util.*;
 
@@ -237,5 +238,9 @@ public class WorldController {
 
     public void setLevelWon() {
         nbWon ++;
+    }
+
+    public void addClickListenersToMap(CreationMode creationMode) {
+        mapManager.addClickListeners(creationMode, stage);
     }
 }

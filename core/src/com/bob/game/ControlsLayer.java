@@ -16,6 +16,7 @@ class ControlsLayer extends Layer {
     private final Button submitButton;
     private final Button resetButton;
     private final Button hintButton;
+    private final TextButton helpButton;
 
     public ControlsLayer(Skin skin, final GameController controller) {
         TextButton quitButton = new TextButton("MENU", skin, "blue_button");
@@ -55,7 +56,7 @@ class ControlsLayer extends Layer {
 
         // ----------
         // HELPS BUTTON
-        final TextButton helpButton = new TextButton("?", skin, "grey_button");
+        helpButton = new TextButton("?", skin, "grey_button");
         helpButton.setBounds(1318, 931, 50, 58);
         helpButton.addListener(new ClickListener() {
             public void clicked(InputEvent ie, float x, float y) {
@@ -164,5 +165,7 @@ class ControlsLayer extends Layer {
     public void disableHints(boolean disabled) {
         this.hintButton.setVisible(disabled);
     }
+
+    public void disableHelp(boolean disabled) { this.helpButton.setVisible(disabled);}
 
 }

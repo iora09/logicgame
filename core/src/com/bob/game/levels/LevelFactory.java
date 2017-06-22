@@ -128,6 +128,10 @@ public class LevelFactory {
                 }
 
             }
+
+            case "CREATE": {
+                return new WriteLevel(root, "empty");
+            }
             default: return null;
         }
     }
