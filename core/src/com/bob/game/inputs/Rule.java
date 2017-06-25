@@ -1,11 +1,14 @@
 package com.bob.game.inputs;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.bob.game.Layer;
+import com.bob.main.ReadModeLayer;
 import com.bob.main.TextureFactory;
 
 import java.util.LinkedList;
@@ -175,5 +178,31 @@ public class Rule {
 
     public Image getLock() {
         return lock;
+    }
+
+    public void initViewForCreation(Layer layer, Skin skin, int startingX, int startingY) {
+        for (int i = 0; i < cells.length; ++i) {
+            Image bkgImage = new Image(skin, "target");
+            bkgImage.setBounds(startingX + i * 60, startingY, 50, 50);
+            final int finalI = i;
+            final int finalI1 = i;
+            bkgImage.addListener(new ClickListener(Input.Buttons.LEFT) {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                        ReadModeLayer.inputLayer.setVisibility(true);
+                        ReadModeLayer.selectedRuleCell = cells[finalI];
+                }
+
+            });
+
+            bkgImage.addListener(new ClickListener(Input.Buttons.RIGHT) {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    cells[finalI].reset();
+                }
+
+            });
+            cells[i].initView(layer, startingX + i * 60, startingY, bkgImage, skin);
+        }
     }
 }

@@ -1,8 +1,8 @@
 package com.bob.main;
 
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bob.game.Layer;
 import com.bob.game.inputs.Tile;
@@ -15,8 +15,7 @@ public class CreationMode {
     private Layer layer;
     public static Tile selected = null;
     public static boolean bobSelected = false;
-    //WriteModeLayer writeModeLayer = new WriteModeLayer();
-    //ReadModeLayer readModeLayer = new ReadModeLayer();
+    public boolean lightbulbSelected = false;
 
     public void setLayer(Layer layer) {
         this.layer = layer;
@@ -26,7 +25,7 @@ public class CreationMode {
         return layer;
     }
 
-    public void createInputTiles(Skin skin, String mode) {
+    public void createInputTiles(String mode) {
         int x = 25;
         final int finalY = 1080 - 130;
         for (int i = 1; i < 8; ++i) {
@@ -46,7 +45,7 @@ public class CreationMode {
         }
 
         //  ADD the Question Mark only if in Read Mode
-        if (mode == "read") {
+        if (mode.equals("read")) {
             final Tile inputTile = Tile.getTile(8);
             Image inputTileImage = new Image(TextureFactory.createTexture(inputTile.getImagePath()));
             inputTileImage.setBounds(x , finalY, 100,80);
@@ -72,15 +71,16 @@ public class CreationMode {
             public void clicked(InputEvent event, float x, float y) {
                 selected = inputTile;
                 bobSelected = false;
+                lightbulbSelected = false;
                 setSelectedImage(finalX, finalY);
             }
         });
         layer.addActor(inputTileImage);
 
-        x = x + 130;
+        x = x + 140;
 
         // BOB
-        Image bobImage = new Image(TextureFactory.createTexture("bob/bob.png"));
+        final Image bobImage = new Image(TextureFactory.createTexture("bob/bob.png"));
         bobImage.setBounds(x, finalY, 80, 130);
         final int finalXX = x;
         bobImage.addListener(new ClickListener() {
@@ -88,13 +88,31 @@ public class CreationMode {
             public void clicked(InputEvent event, float x, float y) {
                 selected = null;
                 bobSelected = true;
+                lightbulbSelected = false;
                 bobSelectedImage.setBounds(finalXX, finalY, 85, 135);
                 layer.addActorFirst(bobSelectedImage);
                 layer.removeActor(selectedTileImage);
             }
         });
-
+        x = x + 90;
         layer.addActor(bobImage);
+
+        if (mode.equals("macro")) {
+            // LIGHTBULB
+            final Image lightbulbImage = new Image(TextureFactory.createTexture("macro/light_bulb.png"));
+            lightbulbImage.setBounds(x, finalY, 50, 100);
+            lightbulbImage.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    selected = null;
+                    bobSelected = false;
+                    lightbulbSelected = true;
+                    layer.removeActor(bobSelectedImage);
+                    layer.removeActor(selectedTileImage);
+                }
+            });
+            layer.addActor(lightbulbImage);
+        }
     }
 
     private void setSelectedImage(int x, int y) {
@@ -102,6 +120,11 @@ public class CreationMode {
         layer.removeActor(bobSelectedImage);
         selectedTileImage.setBounds(x, y, 105,85);
         layer.addActorFirst(selectedTileImage);
+    }
+
+    public void addGroup(Group group) {
+        layer.addActor(group);
+        layer.setCreationGroup(group);
     }
 
 }

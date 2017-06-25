@@ -7,6 +7,7 @@ import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
 import com.bob.main.CreationMode;
+import com.bob.main.ReadModeLayer;
 
 import java.util.*;
 
@@ -106,7 +107,8 @@ public class GameController {
             layerGroup.setVisibility("tutorial", false);
             layerGroup.setVisibility("create", true);
 
-            creationMode.createInputTiles(skin, "read");
+            creationMode.createInputTiles("read");
+            creationMode.addGroup(new ReadModeLayer(skin));
 
         } else if (currentLevel.allowTutorial()) {
             ((BackgroundLayer) layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
@@ -229,6 +231,7 @@ public class GameController {
     public void linkStage(Stage stage) {
         layerGroup.setStage(stage);
         worldController.setStage(stage);
+        //readModeLayer.setStage(stage);
     }
 
     public void show() {

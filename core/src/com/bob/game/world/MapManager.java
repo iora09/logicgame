@@ -239,4 +239,8 @@ public class MapManager {
     public TiledMap getMap() {
         return map;
     }
+
+    public TiledMapTileLayer getObjectsLayer() {
+        return objectsLayer;
+    }
 }

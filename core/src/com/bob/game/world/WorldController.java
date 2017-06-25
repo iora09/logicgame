@@ -6,11 +6,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.Block;
 import com.bob.game.levels.Level;
 import com.bob.main.CreationMode;
+import com.bob.main.ReadModeLayer;
+import com.bob.main.TextureFactory;
 
 import java.util.*;
 
@@ -37,6 +40,9 @@ public class WorldController {
     // Golden cells
     private Stage stage;
     private final List<ClickListener> goldListener;
+
+    //LightBulbs for creation mode
+    Map<WorldCoordinates, Image> lightBulbs = new HashMap<>();
 
     public WorldController() {
         goldListener = new LinkedList<>();
@@ -244,18 +250,37 @@ public class WorldController {
 
     public void addClickListenersToMap(final CreationMode creationMode) {
         final TiledMapTileLayer floorLayer = mapManager.getFloorLayer();
+        final TiledMapTileLayer objectLayer = mapManager.getObjectsLayer();
         final TiledMap map = mapManager.getMap();
+        for(Image lightBulb : lightBulbs.values()) {
+            creationMode.getLayer().removeActor(lightBulb);
+        }
+        lightBulbs.clear();
         for (int x = 0; x < floorLayer.getWidth(); x++) {
             for (int y = 0; y < floorLayer.getHeight(); y++) {
                 final WorldCoordinates coord = new WorldCoordinates(x, y);
                 ClickListener listener = new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if (Math.abs(x - coord.getScreenX()) < 50 && Math.abs(y - coord.getScreenY()) < 30)
-                            if (creationMode.selected != null) {
-                            floorLayer.getCell((int)coord.getWorldX(), (int)coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
-                        } else if (creationMode.bobSelected) {
-                            resetBob((int) coord.getWorldX(), (int) coord.getWorldY());
+                        if(!ReadModeLayer.inputLayer.isVisible()) {
+                            if (Math.abs(x - coord.getScreenX()) < 40 && Math.abs(y - coord.getScreenY()) < 20)
+                                if (creationMode.selected != null) {
+                                    floorLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
+                                } else if (creationMode.bobSelected) {
+                                    resetBob((int) coord.getWorldX(), (int) coord.getWorldY());
+                                } else if (creationMode.lightbulbSelected) {
+                                    if (lightBulbs.containsKey(coord)) {
+                                        objectLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).getTile().setId(0);
+                                        creationMode.getLayer().removeActor(lightBulbs.get(coord));
+                                        lightBulbs.remove(coord);
+                                    } else {
+                                        objectLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).setTile(map.getTileSets().getTile(25));
+                                        Image lightBulb = new Image(TextureFactory.createTexture("macro/light_bulb.png"));
+                                        lightBulb.setBounds((int) coord.getScreenX() - 10, (int) coord.getScreenY(), 40, 60);
+                                        creationMode.getLayer().addActor(lightBulb);
+                                        lightBulbs.put(coord, lightBulb);
+                                    }
+                                }
                         }
                     }
                 };
