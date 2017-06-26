@@ -89,11 +89,6 @@ public class GameController {
 
         worldController.initRender();
 
-        if (currentLevel.hasTutorial()) {
-            ((HelpScreen)layerGroup.get("help screen")).setImages(currentLevel.getTutorialImages());
-            layerGroup.setVisibility("help screen", true);
-        }
-
         if (currentLevel.allowMacro()) {
             layerGroup.setVisibility("macro", true);
             layerGroup.setVisibility("inputs", false);
@@ -166,6 +161,16 @@ public class GameController {
 
         ((BackgroundLayer)layerGroup.get("background")).changeText(currentLevel.getText());
         ((BackgroundLayer)layerGroup.get("background")).setMaxLights(worldController.getMaxObjects());
+
+        if (currentLevel.hasTutorial()) {
+            if(currentLevel.getType().equals("CREATE")) {
+                creationMode.getLayer().group.addActor(((HelpScreen)layerGroup.get("help screen")).group);
+            } else {
+                creationMode.getLayer().group.removeActor(((HelpScreen)layerGroup.get("help screen")).group);
+            }
+            ((HelpScreen)layerGroup.get("help screen")).setImages(currentLevel.getTutorialImages());
+            layerGroup.setVisibility("help screen", true);
+        }
     }
 
     public void render(float deltaTime) {
@@ -261,7 +266,6 @@ public class GameController {
     public void linkStage(Stage stage) {
         layerGroup.setStage(stage);
         worldController.setStage(stage);
-        //readModeLayer.setStage(stage);
     }
 
     public void show() {
