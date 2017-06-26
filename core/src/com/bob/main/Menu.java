@@ -26,11 +26,12 @@ public class Menu {
     private static final Group modeGroup = new Group();
     private static final Group settingsGroup = new Group();
     private static final Group levelsGroup = new Group();
+    private static final Group createGroup = new Group();
     private static Group gameStoreGroup = new GameStore();
     private static Group tutorialGroup = new Group();
     private static boolean isVisible = true;
     private static Level levelSelected;
-    private static Create createMode = Create.NOTHING;
+    public static Create createMode = Create.NOTHING;
 
     public enum Create {
         WRITE, READ, MACRO, NOTHING
@@ -43,7 +44,47 @@ public class Menu {
         initMode(skin);
         initSettings(skin);
         initTutorials(skin);
+        initCreate(skin);
         ((GameStore)gameStoreGroup).init(skin, false);
+    }
+
+    private void initCreate(Skin skin) {
+        Image createBkg = new Image(TextureFactory.createTexture("screens/menu.png"));
+        createBkg.setBounds(0,0, 1920, 1080);
+        createGroup.addActor(createBkg);
+        String create[] = {"WRITE", "READ", "MACRO"};
+
+        Map<String, Button> createButtons = addButtons(createGroup, skin, create);
+        File emptyLevelFile = new File("levels/empty.xml");
+        final Level emptyLevel = LevelFactory.loadInternalLevel(emptyLevelFile.getPath());
+
+        createButtons.get("WRITE").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                createMode = Create.WRITE;
+                launchLevel(emptyLevel);
+
+            }
+        });
+
+        createButtons.get("READ").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                createMode = Create.READ;
+                launchLevel(emptyLevel);
+            }
+        });
+
+        createButtons.get("MACRO").addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                createMode = Create.MACRO;
+                launchLevel(emptyLevel);
+            }
+        });
+
+        addBackButton(skin, createGroup);
+        createGroup.setVisible(false);
     }
 
     private void initTutorials(Skin skin) {
@@ -93,10 +134,7 @@ public class Menu {
         buttons.get("CREATE").addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                createMode = Create.READ;
-                File emptyLevelFile = new File("levels/empty.xml");
-                Level emptyLevel = LevelFactory.loadInternalLevel(emptyLevelFile.getPath());
-                launchLevel(emptyLevel);
+               createGroup.setVisible(true);
             }
         });
 
@@ -330,6 +368,7 @@ public class Menu {
         tutorialGroup.setVisible(false);
         settingsGroup.setVisible(false);
         gameStoreGroup.setVisible(false);
+        createGroup.setVisible(false);
         isVisible = false;
     }
 
@@ -348,5 +387,6 @@ public class Menu {
         stage.addActor(tutorialGroup);
         stage.addActor(settingsGroup);
         stage.addActor(gameStoreGroup);
+        stage.addActor(createGroup);
     }
 }

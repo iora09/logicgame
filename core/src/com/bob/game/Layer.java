@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public abstract class Layer {
     protected final Group group = new Group();
-    private Group creationGroup = new Group();
     protected boolean initialVisibility = true;
     private boolean visibility = false;
 
@@ -17,7 +16,6 @@ public abstract class Layer {
 
     public void setVisibility(boolean visible) {
         group.setVisible(visible);
-        creationGroup.setVisible(visible);
         visibility = visible;
     }
 
@@ -52,11 +50,7 @@ public abstract class Layer {
         group.setColor(color);
     }
 
-    public void setCreationGroup(Group group) {
-        this.creationGroup = group;
-    }
-
-    public Group getCreationGroup() {
-        return creationGroup;
+    public void clear() {
+        group.clear();
     }
 }

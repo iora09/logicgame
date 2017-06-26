@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -13,10 +12,11 @@ import com.bob.main.TextureFactory;
 
 class ControlsLayer extends Layer {
 
-    private final Button submitButton;
+    private final TextButton submitButton;
     private final Button resetButton;
     private final Button hintButton;
     private final TextButton helpButton;
+    private final TextButton backButton;
 
     public ControlsLayer(final Skin skin, final GameController controller) {
         TextButton quitButton = new TextButton("MENU", skin, "blue_button");
@@ -152,6 +152,17 @@ class ControlsLayer extends Layer {
 
         group.addActor(playButton);
 
+        //BACK
+        backButton = new TextButton("BACK", skin, "grey_button");
+        backButton.setBounds(1030, 10, 210, 60);
+        backButton.addListener(new ClickListener() {
+            public void clicked(InputEvent ie, float x, float y) {
+                controller.goBackToCreate(skin);
+            }
+        });
+        backButton.setVisible(false);
+        group.addActor(backButton);
+
     }
 
     public void disableSubmit(boolean disabled) {
@@ -167,5 +178,15 @@ class ControlsLayer extends Layer {
     }
 
     public void disableHelp(boolean disabled) { this.helpButton.setVisible(disabled);}
+
+    public void disableBackToCreate(boolean disabled) {this.backButton.setVisible(disabled);}
+
+    public void changeSubmitText(boolean isPreview) {
+        if(isPreview) {
+            submitButton.setText("PREVIEW");
+        } else {
+            submitButton.setText("SUBMIT");
+        }
+    }
 
 }

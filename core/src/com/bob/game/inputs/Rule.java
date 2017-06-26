@@ -123,6 +123,10 @@ public class Rule {
         }
     }
 
+    public RuleCell[] getRuleCells() {
+        return cells;
+    }
+
     public void toggleLights() { //Duplication of verification, could be cached if needed
         light.setDrawable(isValid() ? greenLight : redLight);
     }

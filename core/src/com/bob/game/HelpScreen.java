@@ -66,7 +66,7 @@ public class HelpScreen extends Layer {
     public void setStage(Stage stage) {
         stage.addActor(group);
 
-        stage.addListener(new InputListener(){
+        /*stage.addListener(new InputListener(){
             public boolean keyDown(InputEvent ie, int keycode) {
                 if (group.isVisible() && (keycode == com.badlogic.gdx.Input.Keys.ENTER || keycode == com.badlogic.gdx.Input.Keys.SPACE)) {
                     next();
@@ -76,6 +76,7 @@ public class HelpScreen extends Layer {
                 return false;
             }
         });
+        */
     }
 
     private void hide() {

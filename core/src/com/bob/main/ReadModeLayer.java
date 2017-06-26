@@ -1,5 +1,6 @@
 package com.bob.main;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,6 +15,7 @@ import com.bob.game.inputs.BlockCoordinatesGenerator;
 import com.bob.game.inputs.InputsLayer;
 import com.bob.game.inputs.Rule;
 import com.bob.game.inputs.RuleCell;
+import com.bob.game.levels.Level;
 
 public class ReadModeLayer extends Group {
     public static RuleCell selectedRuleCell = null;
@@ -21,9 +23,9 @@ public class ReadModeLayer extends Group {
     private static Layer ruleLayer = new InputsLayer();
     public static Layer inputLayer = new InputsLayer();
 
-    public ReadModeLayer(Skin skin) {
+    public ReadModeLayer(Skin skin, Level level) {
         Image inputsCreateBkg = new Image(TextureFactory.createTexture("screens/rules_create.png"));
-        inputsCreateBkg.setBounds(1400, 1035 - 650, 500, 650);
+        inputsCreateBkg.setBounds(1400, 1035 - 607, 500, 600);
         addActor(inputsCreateBkg);
         int y = 1035 - 117;
         for (int i = 0; i < 8; ++i) {
@@ -32,6 +34,15 @@ public class ReadModeLayer extends Group {
             y -= 70;
         }
         createInputsPanel(skin);
+
+        for(int i = 0 ; i < level.getRules().length; i++) {
+            for(int j = 0; j < level.getRules()[i].length; j++) {
+                rules[i].getRuleCells()[j].reset();
+                rules[i].getRuleCells()[j].setPayload(level.getRules()[i][j]);
+                rules[i].getRuleCells()[j].setImage(false);
+            }
+        }
+
         inputLayer.setVisibility(false);
         ruleLayer.setVisibility(true);
     }
@@ -64,8 +75,8 @@ public class ReadModeLayer extends Group {
                 inputLayer.setVisibility(false);
             }
         });
-        OK.setBounds(850, 1080 - 880, 100, 50);
-        cancel.setBounds(970, 1080-880, 150, 50);
+        OK.setBounds(860, 1080 - 880, 100, 50);
+        cancel.setBounds(980, 1080-880, 150, 50);
         inputLayer.addActor(OK);
         inputLayer.addActor(cancel);
     }
@@ -88,15 +99,21 @@ public class ReadModeLayer extends Group {
 
     }
 
+    @Override
     public void setStage(Stage stage) {
-        ruleLayer.setStage(stage);
-        inputLayer.setStage(stage);
+        if (stage != null) {
+            ruleLayer.setStage(stage);
+            inputLayer.setStage(stage);
+        }
     }
 
     @Override
     public void setVisible(boolean visible) {
-        ruleLayer.setVisibility(visible);
-        if(!visible) {
+        if (visible) {
+            ruleLayer.setVisibility(true);
+        } else {
+            ruleLayer.clear();
+            ruleLayer.setVisibility(visible);
             inputLayer.setVisibility(visible);
         }
     }

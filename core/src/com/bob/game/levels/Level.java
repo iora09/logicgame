@@ -185,4 +185,8 @@ public abstract class Level {
     public String getTutText() {
         return tutText;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

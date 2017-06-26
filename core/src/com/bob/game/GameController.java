@@ -1,5 +1,6 @@
 package com.bob.game;
 
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -7,6 +8,7 @@ import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
 import com.bob.main.CreationMode;
+import com.bob.main.Menu;
 import com.bob.main.ReadModeLayer;
 import com.bob.main.WriteModeLayer;
 
@@ -24,6 +26,7 @@ public class GameController {
     private final ChoicesManager choicesManager;
     private final CreationMode creationMode;
     private int currentHint = 0;
+    private boolean isInPreview = false;
 
     public GameController(Skin skin, OrthographicCamera camera) {
 
@@ -40,7 +43,7 @@ public class GameController {
         layerGroup.add("tutorial", new InputsLayer(skin));
         layerGroup.add("tryAgain", new TryAgainLayer(skin, this));
         layerGroup.add("notComplete", new NotCompleteResponseLayer(skin));
-        layerGroup.add("create", new WriteCreateLayer());
+        layerGroup.add("create", new CreateLayer());
 
         inputsManager = new InputsManager();
         macroManager = new MacroManager();
@@ -59,7 +62,7 @@ public class GameController {
         choicesManager.setLayer(((InputsLayer)layerGroup.get("tutorial")));
         choicesManager.initRuleView(skin, 1475, 1080-495, false);
 
-        creationMode.setLayer(layerGroup.get("create"));
+        creationMode.setLayer((CreateLayer) layerGroup.get("create"));
     }
 
     public void reset() {
@@ -107,9 +110,26 @@ public class GameController {
             layerGroup.setVisibility("inputs", false);
             layerGroup.setVisibility("tutorial", false);
             layerGroup.setVisibility("create", true);
+            ((CreateLayer) layerGroup.get("create")).reset();
+            switch (Menu.createMode) {
+                case WRITE: {
+                    creationMode.createInputTiles("write");
+                    creationMode.addGroup(new WriteModeLayer(skin, currentLevel));
+                    break;
+                }
 
-            creationMode.createInputTiles("write");
-            creationMode.addGroup(new WriteModeLayer(skin));
+                case READ: {
+                    creationMode.createInputTiles("read");
+                    creationMode.addGroup(new ReadModeLayer(skin, currentLevel));
+                    break;
+                }
+
+                default: {
+                    creationMode.createInputTiles("macro");
+                    creationMode.addGroup(new Group());
+                }
+            }
+
 
         } else if (currentLevel.allowTutorial()) {
             ((BackgroundLayer) layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
@@ -140,7 +160,9 @@ public class GameController {
         ((ControlsLayer)layerGroup.get("controls")).disableReset(currentLevel.allowRuleReset());
         ((ControlsLayer)layerGroup.get("controls")).disableHints(currentLevel.hasHints());
         ((ControlsLayer)layerGroup.get("controls")).disableHelp(!currentLevel.getType().equals("CREATE"));
-
+        ((ControlsLayer)layerGroup.get("controls")).disableReset(!currentLevel.getType().equals("CREATE"));
+        ((ControlsLayer)layerGroup.get("controls")).changeSubmitText(currentLevel.getType().equals("CREATE"));
+        ((ControlsLayer)layerGroup.get("controls")).disableBackToCreate(isInPreview);
 
         ((BackgroundLayer)layerGroup.get("background")).changeText(currentLevel.getText());
         ((BackgroundLayer)layerGroup.get("background")).setMaxLights(worldController.getMaxObjects());
@@ -160,6 +182,7 @@ public class GameController {
 
         if (worldController.isLevelWon()) {
             currentLevel.save();
+            ((WinningLayer)layerGroup.get("winning")).changeWinningButtons(isInPreview);
             layerGroup.setVisibility("winning", true);
         }
 
@@ -188,6 +211,7 @@ public class GameController {
     public void submit(Skin skin) {
         if (currentLevel.getType().equals("CREATE")) {
             currentLevel = creationMode.getCreatedLevel(worldController);
+            isInPreview = true;
             startNewLevel(skin);
         } else {
             resetWorld();
@@ -245,6 +269,7 @@ public class GameController {
     }
 
     public void hide() {
+        isInPreview = false;
         layerGroup.hide();
     }
 
@@ -273,5 +298,20 @@ public class GameController {
 
     public void tryAgain(Skin skin) {
         choicesManager.resetCheckboxes();
+    }
+
+    public void changeCurrentLevelToCreate(){
+        currentLevel.setType("CREATE");
+    }
+
+    public void goBackToCreate(Skin skin) {
+        changeCurrentLevelToCreate();
+        isInPreview = false;
+        startNewLevel(skin);
+        layerGroup.get("winning").setVisibility(false);
+    }
+
+    public void goBackToPlay() {
+        layerGroup.get("winning").setVisibility(false);
     }
 }

@@ -80,6 +80,13 @@ public enum Block {
         this.tooltip = tooltip;
     }
 
+    public static Block[] getMacroValues() {
+        return new Block[] {
+                WHITE,RED,GREEN,YELLOW,ORANGE,PURPLE,WHITE_PREV,RED_PREV,GREEN_PREV,YELLOW_PREV,ORANGE_PREV,PURPLE_PREV,
+                AND,IMPLY,NOT,UP,DOWN,LEFT,RIGHT
+        };
+    }
+
     public String getLPSString() {
         return LPSString;
     }

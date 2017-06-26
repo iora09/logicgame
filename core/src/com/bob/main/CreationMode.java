@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.bob.game.CreateLayer;
 import com.bob.game.Layer;
 import com.bob.game.inputs.Tile;
 import com.bob.game.levels.Level;
@@ -15,12 +16,12 @@ public class CreationMode {
 
     private Image selectedTileImage = new Image(TextureFactory.createTexture("maps/selected_tile.png"));
     private Image bobSelectedImage = new Image(TextureFactory.createTexture("bob/bob_selected.png"));
-    private Layer layer;
+    private CreateLayer layer;
     public static Tile selected = null;
     public static boolean bobSelected = false;
     public boolean lightbulbSelected = false;
 
-    public void setLayer(Layer layer) {
+    public void setLayer(CreateLayer layer) {
         this.layer = layer;
     }
 
@@ -126,8 +127,8 @@ public class CreationMode {
     }
 
     public void addGroup(Group group) {
-        layer.addActor(group);
         layer.setCreationGroup(group);
+        layer.addActor(layer.getCreationGroup());
     }
 
     public Level getCreatedLevel(WorldController worldController) {
@@ -143,7 +144,6 @@ public class CreationMode {
         }
         sb.append(worldController.getXML());
         sb.append("</root>");
-        System.out.println(sb.toString());
         Level createdLevel = LevelFactory.createLevel(sb.toString(), "");
         return createdLevel;
     }

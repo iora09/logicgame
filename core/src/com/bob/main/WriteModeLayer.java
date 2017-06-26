@@ -6,25 +6,25 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bob.game.inputs.Block;
 import com.bob.game.inputs.BlockCoordinatesGenerator;
+import com.bob.game.levels.Level;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 public class WriteModeLayer extends Group {
 
     Map<Block, Boolean> inputsMap = new HashMap<>();
     int noOfRules = 8;
     ButtonGroup buttonGroup = new ButtonGroup();
-    public WriteModeLayer(Skin skin) {
+    public WriteModeLayer(Skin skin, Level level) {
         Image inputsCreateBkg = new Image(TextureFactory.createTexture("screens/inputs_create.png"));
         inputsCreateBkg.setBounds(1400, 1035 - 700, 500, 700);
         addActor(inputsCreateBkg);
-
+        java.util.List<Block> levelInputsSoFar = Arrays.asList(level.getInputs());
         BlockCoordinatesGenerator blockCoordGen = new BlockCoordinatesGenerator(1415, 1080 - 165);
         for(Block block : Block.values()) {
             int[] coord = blockCoordGen.getCoordinates(block.getType());
-            createInput(skin, block, coord[0], coord[1]);
-            inputsMap.put(block, false);
+            createInput(levelInputsSoFar, skin, block, coord[0], coord[1]);
         }
 
         Label noRulesLabel = new Label(
@@ -57,12 +57,18 @@ public class WriteModeLayer extends Group {
         buttonGroup.uncheckAll();
     }
 
-    private void createInput(Skin skin, final Block block, int refX, int refY) {
+    private void createInput(List inputsSoFar, Skin skin, final Block block, int refX, int refY) {
         Image inputImage = new Image(TextureFactory.createTexture("blocks/" + block.getImageName() + ".png"));
         final Image selected = new Image(TextureFactory.createTexture("blocks/selected.png"));
         inputImage.setBounds(refX, refY, 50, 50);
         selected.setBounds(refX - 2, refY - 2, 54, 54);
-        selected.setVisible(false);
+        if (inputsSoFar.contains(block)) {
+            inputsMap.put(block, true);
+            selected.setVisible(true);
+        } else {
+            inputsMap.put(block, false);
+            selected.setVisible(false);
+        }
         inputImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
