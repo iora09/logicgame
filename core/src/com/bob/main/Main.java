@@ -207,5 +207,11 @@ public class Main extends ApplicationAdapter {
 		skin.add("tooltipStyle", tooltipStyle);
 
 		skin.add("selected", TextureFactory.createTexture("blocks/selected.png"));
+
+		// CHECKBOX
+		CheckBox test = new CheckBox(null, skin);
+		CheckBox.CheckBoxStyle checkBoxStyle = test.getStyle();
+		checkBoxStyle.font = smallerWhiteFont;
+		skin.add("checkbox", checkBoxStyle);
 	}
 }

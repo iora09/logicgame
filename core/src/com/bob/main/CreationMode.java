@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bob.game.Layer;
 import com.bob.game.inputs.Tile;
+import com.bob.game.levels.Level;
+import com.bob.game.levels.LevelFactory;
+import com.bob.game.world.WorldController;
 
 
 public class CreationMode {
@@ -81,7 +84,7 @@ public class CreationMode {
 
         // BOB
         final Image bobImage = new Image(TextureFactory.createTexture("bob/bob.png"));
-        bobImage.setBounds(x, finalY, 80, 130);
+        bobImage.setBounds(x, finalY - 5, 60, 120);
         final int finalXX = x;
         bobImage.addListener(new ClickListener() {
             @Override
@@ -89,7 +92,7 @@ public class CreationMode {
                 selected = null;
                 bobSelected = true;
                 lightbulbSelected = false;
-                bobSelectedImage.setBounds(finalXX, finalY, 85, 135);
+                bobSelectedImage.setBounds(finalXX, finalY - 5, 62, 122);
                 layer.addActorFirst(bobSelectedImage);
                 layer.removeActor(selectedTileImage);
             }
@@ -127,4 +130,21 @@ public class CreationMode {
         layer.setCreationGroup(group);
     }
 
+    public Level getCreatedLevel(WorldController worldController) {
+        StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        if (layer.getCreationGroup() instanceof WriteModeLayer) {
+           sb.append("<root type=\"WRITE\">\n");
+           sb.append(((WriteModeLayer)layer.getCreationGroup()).getXML());
+        } else if (layer.getCreationGroup() instanceof ReadModeLayer) {
+            sb.append("<root type=\"READ\">\n");
+            sb.append(((ReadModeLayer)layer.getCreationGroup()).getXML());
+        } else {
+            sb.append("<root type=\"MACRO\">\n");
+        }
+        sb.append(worldController.getXML());
+        sb.append("</root>");
+        System.out.println(sb.toString());
+        Level createdLevel = LevelFactory.createLevel(sb.toString(), "");
+        return createdLevel;
+    }
 }

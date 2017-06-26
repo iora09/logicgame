@@ -55,4 +55,8 @@ public abstract class Layer {
     public void setCreationGroup(Group group) {
         this.creationGroup = group;
     }
+
+    public Group getCreationGroup() {
+        return creationGroup;
+    }
 }

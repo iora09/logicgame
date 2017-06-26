@@ -41,6 +41,8 @@ public class WorldController {
     private Stage stage;
     private final List<ClickListener> goldListener;
 
+    private final List<ClickListener> createModeListeners;
+
     //LightBulbs for creation mode
     Map<WorldCoordinates, Image> lightBulbs = new HashMap<>();
 
@@ -52,6 +54,7 @@ public class WorldController {
         currentRuleIndexes = new ArrayList<Integer>();
         bob = new Entity(0, 0);
         objects = new ArrayList<Entity>();
+        createModeListeners = new ArrayList<>();
     }
 
     public void setCamera(OrthographicCamera camera) {
@@ -108,6 +111,9 @@ public class WorldController {
         resetBob(x, y);
         resetLights();
         currentRuleIndexes.clear();
+        for (ClickListener listener : createModeListeners) {
+            stage.removeListener(listener);
+        }
     }
 
     public void startLPSAnimation(Level level, String rules) {
@@ -263,7 +269,7 @@ public class WorldController {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         if(!ReadModeLayer.inputLayer.isVisible()) {
-                            if (Math.abs(x - coord.getScreenX()) < 40 && Math.abs(y - coord.getScreenY()) < 20)
+                            if (coord.isInMap() && Math.abs(x - coord.getScreenX()) < 40 && Math.abs(y - coord.getScreenY()) < 20)
                                 if (creationMode.selected != null) {
                                     floorLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
                                 } else if (creationMode.bobSelected) {
@@ -285,7 +291,15 @@ public class WorldController {
                     }
                 };
                 stage.addListener(listener);
+                createModeListeners.add(listener);
             }
         }
+    }
+
+    public String getXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<bob x=\""+ (int)bob.getCoord().getWorldX() + "\" y=\""+ (int)bob.getCoord().getWorldY() + "\" />\n");
+        sb.append(mapManager.getXML());
+        return sb.toString();
     }
 }

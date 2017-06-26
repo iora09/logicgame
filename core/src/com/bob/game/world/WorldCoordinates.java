@@ -38,4 +38,8 @@ public class WorldCoordinates {
     public boolean collide(WorldCoordinates coord) {
         return Math.round(this.x) == Math.round(coord.getWorldX()) && Math.round(this.y) == Math.round(coord.getWorldY());
     }
+
+    public boolean isInMap() {
+        return (getScreenX() > 50 && getScreenX() < 1335 && getScreenY() > 120 && getScreenY() < 885);
+    }
 }

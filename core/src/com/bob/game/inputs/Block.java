@@ -102,4 +102,8 @@ public enum Block {
         }
         return null;
     }
+
+    public String getXML() {
+        return "<block name = \"" + imageName + "\" />";
+    }
 }

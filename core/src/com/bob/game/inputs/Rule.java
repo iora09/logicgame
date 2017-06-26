@@ -185,7 +185,6 @@ public class Rule {
             Image bkgImage = new Image(skin, "target");
             bkgImage.setBounds(startingX + i * 60, startingY, 50, 50);
             final int finalI = i;
-            final int finalI1 = i;
             bkgImage.addListener(new ClickListener(Input.Buttons.LEFT) {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -204,5 +203,16 @@ public class Rule {
             });
             cells[i].initView(layer, startingX + i * 60, startingY, bkgImage, skin);
         }
+    }
+
+    public String getXML() {
+        StringBuilder sb = new StringBuilder("<rule>\n");
+        for(RuleCell cell : cells) {
+            if (cell.getBlock() != null) {
+                sb.append("\t\t" + cell.getBlock().getXML() + "\n");
+            }
+        }
+        sb.append("\t</rule>");
+        return sb.toString();
     }
 }

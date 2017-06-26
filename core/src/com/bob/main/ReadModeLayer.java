@@ -100,4 +100,15 @@ public class ReadModeLayer extends Group {
             inputLayer.setVisibility(visible);
         }
     }
+
+    public String getXML() {
+        StringBuilder sb = new StringBuilder("<rules>\n");
+        for(Rule rule : rules) {
+            if(rule.isValid() && !rule.isNull()) {
+                sb.append("\t" + rule.getXML() + "\n");
+            }
+        }
+        sb.append("</rules>\n");
+        return sb.toString();
+    }
 }

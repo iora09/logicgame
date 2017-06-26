@@ -34,7 +34,9 @@ public abstract class Level {
         this.objects = csvToArray(root.getChildByName("object").getText());
         this.coordX = bobNode.getInt("x");
         this.coordY = bobNode.getInt("y");
-        this.text = root.getChildByName("text").getText();
+        if (root.getChildByName("text") != null) {
+            this.text = root.getChildByName("text").getText();
+        }
         this.hints = extractStrings(root.getChildByName("hints"));
         this.tutorialImages = extractStrings(root.getChildByName("tutorial"));
 

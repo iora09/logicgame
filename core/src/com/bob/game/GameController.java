@@ -8,6 +8,7 @@ import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
 import com.bob.main.CreationMode;
 import com.bob.main.ReadModeLayer;
+import com.bob.main.WriteModeLayer;
 
 import java.util.*;
 
@@ -107,8 +108,8 @@ public class GameController {
             layerGroup.setVisibility("tutorial", false);
             layerGroup.setVisibility("create", true);
 
-            creationMode.createInputTiles("read");
-            creationMode.addGroup(new ReadModeLayer(skin));
+            creationMode.createInputTiles("write");
+            creationMode.addGroup(new WriteModeLayer(skin));
 
         } else if (currentLevel.allowTutorial()) {
             ((BackgroundLayer) layerGroup.get("background")).changeForeground("screens/choices_foreground.png");
@@ -184,29 +185,34 @@ public class GameController {
         layerGroup.setVisibility("winning", false);
     }
 
-    public void submit() {
-        resetWorld();
-
-        if (currentLevel.allowMacro()) {
-            startLPSAnim(macroManager.getRulesString());
-        } else if (currentLevel.allowTutorial()) {
-            choicesManager.checkChoices(1365, 1080 - 495, currentLevel.getNoRules());
-            if (choicesManager.areAllCheckedRulesCorrect()&&choicesManager.areCorrectRulesComplete()) {
-               worldController.setLevelWon();
-            } else {
-                layerGroup.setVisibility("tryAgain", true);
-                if(!choicesManager.areCorrectRulesComplete()) {
-                    layerGroup.setVisibility("notComplete", true);
-                }
-            }
+    public void submit(Skin skin) {
+        if (currentLevel.getType().equals("CREATE")) {
+            currentLevel = creationMode.getCreatedLevel(worldController);
+            startNewLevel(skin);
         } else {
-            if (inputsManager.mixedParadigmUsed()) {
-                ((HelpScreen)layerGroup.get("help screen")).setImage("screens/both_paradigm.png");
-                layerGroup.setVisibility("help screen", true);
-            } else if (inputsManager.onlyConsequentUsed()) {
-                startMockAnim(inputsManager.getBlockStack());
+            resetWorld();
+
+            if (currentLevel.allowMacro()) {
+                startLPSAnim(macroManager.getRulesString());
+            } else if (currentLevel.allowTutorial()) {
+                choicesManager.checkChoices(1365, 1080 - 495, currentLevel.getNoRules());
+                if (choicesManager.areAllCheckedRulesCorrect() && choicesManager.areCorrectRulesComplete()) {
+                    worldController.setLevelWon();
+                } else {
+                    layerGroup.setVisibility("tryAgain", true);
+                    if (!choicesManager.areCorrectRulesComplete()) {
+                        layerGroup.setVisibility("notComplete", true);
+                    }
+                }
             } else {
-                startLPSAnim(inputsManager.getRulesString());
+                if (inputsManager.mixedParadigmUsed()) {
+                    ((HelpScreen) layerGroup.get("help screen")).setImage("screens/both_paradigm.png");
+                    layerGroup.setVisibility("help screen", true);
+                } else if (inputsManager.onlyConsequentUsed()) {
+                    startMockAnim(inputsManager.getBlockStack());
+                } else {
+                    startLPSAnim(inputsManager.getRulesString());
+                }
             }
         }
     }

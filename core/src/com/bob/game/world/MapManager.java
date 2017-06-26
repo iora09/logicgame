@@ -243,4 +243,36 @@ public class MapManager {
     public TiledMapTileLayer getObjectsLayer() {
         return objectsLayer;
     }
+
+    public String getXML() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<floor>\n");
+        for(int x = 0; x < floorLayer.getWidth();x++) {
+            for (int y = 0; y < floorLayer.getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = floorLayer.getCell(y ,floorLayer.getWidth() - x - 1);
+                sb.append((cell.getTile().getId() == 0) ? 9 : cell.getTile().getId());
+
+                if (x != floorLayer.getWidth() - 1 || y != floorLayer.getHeight() - 1) {
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+        sb.append("</floor>\n");
+
+        sb.append("<object>");
+        for(int x = 0; x < objectsLayer.getWidth();x++) {
+            for (int y = 0; y < objectsLayer.getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = objectsLayer.getCell(y, objectsLayer.getWidth() - x - 1);
+                sb.append(cell.getTile().getId());
+                if (x != objectsLayer.getWidth() - 1 || y != objectsLayer.getHeight() - 1) {
+                    sb.append(",");
+                }
+            }
+            sb.append("\n");
+        }
+        sb.append("</object>\n");
+        return sb.toString();
+    }
 }
