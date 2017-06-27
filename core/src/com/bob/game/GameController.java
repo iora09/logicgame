@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
-import com.bob.main.CreationMode;
-import com.bob.main.Menu;
-import com.bob.main.ReadModeLayer;
-import com.bob.main.WriteModeLayer;
+import com.bob.main.*;
 
 import java.util.*;
 
@@ -25,10 +22,11 @@ public class GameController {
     private final WorldController worldController;
     private final ChoicesManager choicesManager;
     private final CreationMode creationMode;
+    private final GameStore gameStore;
     private int currentHint = 0;
     private boolean isInPreview = false;
 
-    public GameController(Skin skin, OrthographicCamera camera) {
+    public GameController(Skin skin, OrthographicCamera camera, GameStore gameStore) {
 
         layerGroup = new LayerGroup();
 
@@ -44,6 +42,8 @@ public class GameController {
         layerGroup.add("tryAgain", new TryAgainLayer(skin, this));
         layerGroup.add("notComplete", new NotCompleteResponseLayer(skin));
         layerGroup.add("create", new CreateLayer());
+        layerGroup.add("setName", new SetNameLayer(skin, this));
+        layerGroup.add("logIn", new LogInLayer(skin, gameStore));
 
         inputsManager = new InputsManager();
         macroManager = new MacroManager();
@@ -51,6 +51,7 @@ public class GameController {
         choicesManager = new ChoicesManager();
         creationMode = new CreationMode();
         worldController.setCamera(camera);
+        this.gameStore = gameStore;
 
         inputsManager.setLayer((InputsLayer)layerGroup.get("inputs"));
         inputsManager.initRuleView(skin, 1475, 1080 - 495, true);
@@ -63,6 +64,7 @@ public class GameController {
         choicesManager.initRuleView(skin, 1475, 1080-495, false);
 
         creationMode.setLayer((CreateLayer) layerGroup.get("create"));
+        layerGroup.get("logIn").setVisibility(false);
     }
 
     public void reset() {
@@ -84,12 +86,12 @@ public class GameController {
         worldController.setupWorld(currentLevel);
 
         if (currentLevel.getType().equals("CREATE")) {
-            worldController.addClickListenersToMap(creationMode);
+            worldController.addClickListenersToMap(creationMode, this);
         }
 
         worldController.initRender();
 
-        if (currentLevel.allowMacro()) {
+        if (currentLevel.allowMacro() && !currentLevel.getType().equals("CREATE")) {
             layerGroup.setVisibility("macro", true);
             layerGroup.setVisibility("inputs", false);
             layerGroup.setVisibility("create", false);
@@ -156,6 +158,7 @@ public class GameController {
         ((ControlsLayer)layerGroup.get("controls")).disableHints(currentLevel.hasHints());
         ((ControlsLayer)layerGroup.get("controls")).disableHelp(!currentLevel.getType().equals("CREATE"));
         ((ControlsLayer)layerGroup.get("controls")).disableReset(!currentLevel.getType().equals("CREATE"));
+        ((ControlsLayer)layerGroup.get("controls")).disableUploadButton(currentLevel.getType().equals("CREATE"));
         ((ControlsLayer)layerGroup.get("controls")).changeSubmitText(currentLevel.getType().equals("CREATE"));
         ((ControlsLayer)layerGroup.get("controls")).disableBackToCreate(isInPreview);
 
@@ -164,7 +167,7 @@ public class GameController {
 
         if (currentLevel.hasTutorial()) {
             if(currentLevel.getType().equals("CREATE")) {
-                creationMode.getLayer().group.addActor(((HelpScreen)layerGroup.get("help screen")).group);
+                creationMode.getLayer().group.addActorAfter(((CreateLayer)creationMode.getLayer()).getCreationGroup(),((HelpScreen)layerGroup.get("help screen")).group);
             } else {
                 creationMode.getLayer().group.removeActor(((HelpScreen)layerGroup.get("help screen")).group);
             }
@@ -281,6 +284,10 @@ public class GameController {
         return layerGroup.isVisible();
     }
 
+    public boolean isLayerVisible(String layerName) {
+        return layerGroup.get(layerName).isVisible();
+    }
+
     public void displayHints() {
         if (currentLevel.hasHints()) {
             ((MessageLayer) layerGroup.get("message")).changeText(currentLevel.getHints()[currentHint]);
@@ -317,5 +324,19 @@ public class GameController {
 
     public void goBackToPlay() {
         layerGroup.get("winning").setVisibility(false);
+    }
+
+    public void setNameLevelOrLogIn() {
+        if(gameStore.loggedIn) {
+            layerGroup.get("setName").setVisibility(true);
+        } else {
+            layerGroup.get("logIn").setVisibility(true);
+        }
+    }
+
+    public void uploadCurrentLevel(Skin skin, String name) {
+        layerGroup.get("setName").setVisibility(false);
+        System.out.print(creationMode.getXMLofLevel(worldController));
+        gameStore.insertIntoDatabase(skin, creationMode.getXMLofLevel(worldController), name);
     }
 }

@@ -41,6 +41,7 @@ class WinningLayer extends Layer {
         stay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                controller.reset();
                 controller.goBackToPlay();
             }
         });

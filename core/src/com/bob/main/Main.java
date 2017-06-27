@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.GameController;
+import com.bob.game.database.LocalDatabase;
 import com.bob.game.levels.Level;
 import com.bob.game.levels.LevelFactory;
 import com.bob.game.world.Textures;
@@ -30,6 +31,7 @@ public class Main extends ApplicationAdapter {
 
 	protected Menu menu;
 	private GameController gameController;
+	private GameStore gameStore = new GameStore(new LocalDatabase());
 
 	@Override
 	public void create() {
@@ -46,8 +48,8 @@ public class Main extends ApplicationAdapter {
 		camera.position.set(960,540,0);
 		viewport.apply();
 
-		gameController = new GameController(skin, camera);
-		menu = new Menu(skin);
+		gameController = new GameController(skin, camera, gameStore);
+		menu = new Menu(skin, gameStore);
 
 		gameController.linkStage(stage);
 		menu.setStage(stage);

@@ -3,6 +3,7 @@ package com.bob.game.levels;
 import com.badlogic.gdx.utils.XmlReader;
 import com.bob.game.inputs.Block;
 
+import java.sql.Date;
 import java.util.Map;
 
 public abstract class Level {
@@ -24,6 +25,7 @@ public abstract class Level {
     protected String owner = "";
 
     protected Level next;
+    private Date date;
 
     public Level(XmlReader.Element root, String levelName) {
         this.levelName = levelName;
@@ -188,5 +190,18 @@ public abstract class Level {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void resetTutorials() {
+        this.tutorialImages = new String[] {
+                };
     }
 }

@@ -2,7 +2,6 @@ package com.bob.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -10,13 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.bob.game.database.Database;
 import com.bob.game.database.LocalDatabase;
+import com.bob.game.database.OnlineDatabase;
 import com.bob.game.levels.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.File;
-import java.sql.Connection;
 import java.util.*;
 import java.util.List;
 
@@ -27,7 +24,7 @@ public class Menu {
     private static final Group settingsGroup = new Group();
     private static final Group levelsGroup = new Group();
     private static final Group createGroup = new Group();
-    private static Group gameStoreGroup = new GameStore();
+    private static Group gameStoreGroup;
     private static Group tutorialGroup = new Group();
     private static boolean isVisible = true;
     private static Level levelSelected;
@@ -37,7 +34,7 @@ public class Menu {
         WRITE, READ, MACRO, NOTHING
     }
 
-    public Menu(Skin skin) {
+    public Menu(Skin skin, GameStore gameStore) {
 
         initMenu(skin);
         initLevels(skin);
@@ -45,6 +42,7 @@ public class Menu {
         initSettings(skin);
         initTutorials(skin);
         initCreate(skin);
+        this.gameStoreGroup = gameStore;
         ((GameStore)gameStoreGroup).init(skin, false);
     }
 

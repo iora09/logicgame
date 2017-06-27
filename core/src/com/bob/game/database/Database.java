@@ -9,5 +9,6 @@ public interface Database {
 
     Connection connect(DataSource ds);
     ResultSet selectQuery(Connection connection, String sql);
+    DataSource getDataSource(String dbType);
     int otherQuery(Connection connection, String sql) throws SQLException;
 }

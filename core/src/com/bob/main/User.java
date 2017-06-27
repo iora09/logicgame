@@ -1,7 +1,7 @@
 package com.bob.main;
 
 import com.bob.game.database.Database;
-import com.bob.game.database.LocalDatabase;
+import com.bob.game.database.OnlineDatabase;
 import com.bob.game.levels.Level;
 import com.bob.game.levels.LevelFactory;
 
@@ -16,26 +16,27 @@ public class User {
     private String username;
     private List<Level> games = new ArrayList<>();
 
-    public User(String username) {
+    public User(String username, Database db) {
         this.username = username;
-        populateGames();
+        populateGames(db);
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void populateGames() {
+    public void populateGames(Database db) {
         games.clear();
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(((LocalDatabase) db).getDataSource("mysql"));
+        Connection connection = db.connect(db.getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM games JOIN users ON games.game_user = users.username " +
                 "WHERE users.username='" + username + "'");
         try {
             while(rs.next()) {
                 String gameName = rs.getString("game_name");
                 String gameXML = rs.getString("game_xml");
-                games.add(LevelFactory.createLevel(gameXML, gameName));
+                Level game = LevelFactory.createLevel(gameXML, gameName);
+                game.setDate(rs.getDate("game_date"));
+                games.add(game);
             }
             connection.close();
         } catch (SQLException e) {

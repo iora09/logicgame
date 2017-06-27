@@ -132,10 +132,15 @@ public class CreationMode {
     }
 
     public Level getCreatedLevel(WorldController worldController) {
+        Level createdLevel = LevelFactory.createLevel(getXMLofLevel(worldController), "");
+        return createdLevel;
+    }
+
+    public String getXMLofLevel(WorldController worldController) {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         if (layer.getCreationGroup() instanceof WriteModeLayer) {
-           sb.append("<root type=\"WRITE\">\n");
-           sb.append(((WriteModeLayer)layer.getCreationGroup()).getXML());
+            sb.append("<root type=\"WRITE\">\n");
+            sb.append(((WriteModeLayer)layer.getCreationGroup()).getXML());
         } else if (layer.getCreationGroup() instanceof ReadModeLayer) {
             sb.append("<root type=\"READ\">\n");
             sb.append(((ReadModeLayer)layer.getCreationGroup()).getXML());
@@ -144,7 +149,6 @@ public class CreationMode {
         }
         sb.append(worldController.getXML());
         sb.append("</root>");
-        Level createdLevel = LevelFactory.createLevel(sb.toString(), "");
-        return createdLevel;
+        return sb.toString();
     }
 }

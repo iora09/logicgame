@@ -17,6 +17,7 @@ class ControlsLayer extends Layer {
     private final Button hintButton;
     private final TextButton helpButton;
     private final TextButton backButton;
+    private final TextButton uploadButton;
 
     public ControlsLayer(final Skin skin, final GameController controller) {
         TextButton quitButton = new TextButton("MENU", skin, "blue_button");
@@ -163,6 +164,17 @@ class ControlsLayer extends Layer {
         backButton.setVisible(false);
         group.addActor(backButton);
 
+        //UPLOAD
+        uploadButton = new TextButton("UPLOAD", skin, "grey_button");
+        uploadButton.setBounds(1260, 10, 210, 60);
+        uploadButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                controller.setNameLevelOrLogIn();
+            }
+        });
+        uploadButton.setVisible(false);
+        group.addActor(uploadButton);
     }
 
     public void disableSubmit(boolean disabled) {
@@ -180,6 +192,8 @@ class ControlsLayer extends Layer {
     public void disableHelp(boolean disabled) { this.helpButton.setVisible(disabled);}
 
     public void disableBackToCreate(boolean disabled) {this.backButton.setVisible(disabled);}
+
+    public void disableUploadButton(boolean disable) {this.uploadButton.setVisible(disable);}
 
     public void changeSubmitText(boolean isPreview) {
         if(isPreview) {

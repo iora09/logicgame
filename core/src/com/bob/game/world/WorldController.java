@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.bob.game.GameController;
 import com.bob.game.inputs.Block;
 import com.bob.game.levels.Level;
 import com.bob.main.CreationMode;
@@ -254,7 +255,7 @@ public class WorldController {
         nbWon ++;
     }
 
-    public void addClickListenersToMap(final CreationMode creationMode) {
+    public void addClickListenersToMap(final CreationMode creationMode, final GameController gm) {
         final TiledMapTileLayer floorLayer = mapManager.getFloorLayer();
         final TiledMapTileLayer objectLayer = mapManager.getObjectsLayer();
         final TiledMap map = mapManager.getMap();
@@ -268,14 +269,16 @@ public class WorldController {
                 ClickListener listener = new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if(!ReadModeLayer.inputLayer.isVisible()) {
+                        if(!ReadModeLayer.inputLayer.isVisible()
+                                && !gm.isLayerVisible("setName")
+                                && !gm.isLayerVisible("logIn")) {
                             if (coord.isInMap() && Math.abs(x - coord.getScreenX()) < 40 && Math.abs(y - coord.getScreenY()) < 20)
                                 if (creationMode.selected != null) {
                                     floorLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).setTile(map.getTileSets().getTile(creationMode.selected.getXmlNumber()));
                                 } else if (creationMode.bobSelected) {
                                     resetBob((int) coord.getWorldX(), (int) coord.getWorldY());
                                 } else if (creationMode.lightbulbSelected) {
-                                    if (lightBulbs.containsKey(coord)) {
+                                    if (lightBulbs.containsKey(coord) || objectLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).getTile().getId() == 25) {
                                         objectLayer.getCell((int) coord.getWorldX(), (int) coord.getWorldY()).getTile().setId(0);
                                         creationMode.getLayer().removeActor(lightBulbs.get(coord));
                                         lightBulbs.remove(coord);

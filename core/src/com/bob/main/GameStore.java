@@ -10,32 +10,33 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.bob.game.FileChooser;
 import com.bob.game.database.Database;
-import com.bob.game.database.LocalDatabase;
 import com.bob.game.levels.Level;
 import com.bob.game.levels.LevelFactory;
 import com.google.common.hash.Hashing;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.List;
 
 
 public class GameStore extends Group {
 
-    private static boolean loggedIn = false;
+    public static boolean loggedIn = false;
     private static User user;
     private final Group gamesGroup = new Group();
     private final Group logInGroup = new Group();
     private final Group registerGroup = new Group();
     private final Group gameOptionsGroup = new Group();
     private Label errorLabel;
+    private Database db;
 
-    public GameStore() {
+    public GameStore(Database db) {
+        this.db = db;
     }
 
     public void init(Skin skin, boolean visibility) {
@@ -120,9 +121,7 @@ public class GameStore extends Group {
                                 FileHandle fileHandle = getFile();
                                 if (fileHandle != null && fileHandle.exists() && !fileHandle.isDirectory()
                                         && fileHandle.extension().equals("xml")) {
-                                    insertIntoDatabase(fileHandle);
-                                    user.populateGames();
-                                    initLevelsFromDb(skin);
+                                    insertIntoDatabase(skin, fileHandle);
                                 } else if (object.equals("Cancel")) {
                                     this.setVisible(false);
                                 }
@@ -166,16 +165,22 @@ public class GameStore extends Group {
             usersGamesLabel.setBounds(1000,870,100, 50);
             gamesGroup.addActor(usersGamesLabel);
             List<Level> usersGames = user.getGames();
-            Table usersGamesTable = new Table(skin);
-            for(Level game : usersGames) {
-                addGame(usersGamesTable, game, user.getUsername(), skin);
-                usersGamesTable.row();
+            if (usersGames.isEmpty()) {
+                Label noGames = new Label("You have no games!", skin, "info_small_label");
+                noGames.setBounds(1050, 600, 150, 50);
+                gamesGroup.addActor(noGames);
+            } else {
+                Table usersGamesTable = new Table(skin);
+                for (Level game : usersGames) {
+                    addGame(usersGamesTable, game, user.getUsername(), skin);
+                    usersGamesTable.row();
+                }
+                ScrollPane usersGamesPane = new ScrollPane(null, skin, "scroll");
+                usersGamesPane.setBounds(1000, 80, 600, 750);
+                usersGamesPane.setScrollingDisabled(true, false);
+                usersGamesPane.setWidget(usersGamesTable);
+                gamesGroup.addActor(usersGamesPane);
             }
-            ScrollPane usersGamesPane = new ScrollPane(null, skin, "scroll");
-            usersGamesPane.setBounds(1000, 80, 600, 750);
-            usersGamesPane.setScrollingDisabled(true, false);
-            usersGamesPane.setWidget(usersGamesTable);
-            gamesGroup.addActor(usersGamesPane);
         }
     }
 
@@ -191,10 +196,11 @@ public class GameStore extends Group {
                 }
             }
         });
+        String date = game.getDate()==null ? "NaN" : game.getDate().toString();
         Label infoLabel = new Label("Name : " + game.getLevelName() + "\n" + "Type : " + game.getType() + "\n"
-                + "Created by : " + owner, skin, "info_label");
-        table.add(gameImage).width(200).height(150).expandX().padBottom(30);
-        table.add(infoLabel).width(350).height(150).padBottom(30);
+                + "Created by : " + owner + "\n" + "Date : " + date, skin, "info_small_label");
+        table.add(gameImage).width(200).height(150).expandX().padBottom(40);
+        table.add(infoLabel).width(350).height(170).padBottom(40);
     }
 
     private void createAndShowGameOptions(final Level game, final Skin skin) {
@@ -227,6 +233,34 @@ public class GameStore extends Group {
             }
         });
 
+        editButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gameOptionsGroup.setVisible(false);
+                Menu.Create createMode;
+                switch (game.getType()) {
+                    case "WRITE" : {
+                        createMode = Menu.Create.WRITE;
+                        break;
+                    }
+                    case "READ" : {
+                        createMode = Menu.Create.READ;
+                        break;
+                    }
+                    case "MACRO" : {
+                        createMode = Menu.Create.MACRO;
+                        break;
+                    }
+                    default:
+                        createMode = Menu.Create.NOTHING;
+                }
+                game.resetTutorials();
+                Menu.createMode = createMode;
+                game.setType("CREATE");
+                Menu.launchLevel(game);
+            }
+        });
+
         gameOptionsGroup.addActor(playButton);
         gameOptionsGroup.addActor(editButton);
         gameOptionsGroup.addActor(deleteButton);
@@ -234,11 +268,10 @@ public class GameStore extends Group {
     }
 
     private void deleteFromDatabase(Level game, Skin skin) {
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
+        Connection connection = db.connect(db.getDataSource("mysql"));
         try {
             db.otherQuery(connection, "DELETE FROM games WHERE game_name='" + game.getLevelName() + "'");
-            user.populateGames();
+            user.populateGames(db);
             initLevelsFromDb(skin);
             connection.close();
         } catch (SQLException e) {
@@ -246,15 +279,14 @@ public class GameStore extends Group {
         }
     }
 
-    private void insertIntoDatabase(FileHandle fileHandle) {
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
-        String xmlString = fileHandle.readString();
+    public void insertIntoDatabase(Skin skin, String xmlString, String xmlName) {
+        Connection connection = db.connect(db.getDataSource("mysql"));
         xmlString = xmlString.replace("'", "''");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             db.otherQuery(connection, "INSERT INTO games \n VALUES ("
                     + "'"
-                    + fileHandle.nameWithoutExtension()
+                    + xmlName
                     + "'"
                     + ","
                     + "'"
@@ -264,12 +296,22 @@ public class GameStore extends Group {
                     + "'"
                     + user.getUsername()
                     + "'"
-                    + ") ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_user = '" + user.getUsername() + "'");
+                    + ","
+                    + "'"
+                    + dateFormat.format(new Date())
+                    + "'"
+                    + ") ON DUPLICATE KEY UPDATE game_xml = '" + xmlString + "', game_user = '" + user.getUsername()
+                    + "', game_date = '" + dateFormat.format(new Date()) + "'");
 
             connection.close();
-        } catch(SQLException e) { 
-            throw new RuntimeException("Can't close connection: " + e); 
+        } catch(SQLException e) {
+            throw new RuntimeException("Can't close connection: " + e);
         }
+        user.populateGames(db);
+        initLevelsFromDb(skin);
+    }
+    private void insertIntoDatabase(Skin skin, FileHandle fileHandle) {
+        insertIntoDatabase(skin, fileHandle.readString(), fileHandle.nameWithoutExtension());
     }
 
     private void initLogInGroup(final Skin skin) {
@@ -317,7 +359,7 @@ public class GameStore extends Group {
         logInButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent ie, float x, float y) {
-                tryLoggingIn(usernameField.getText(), passwordField.getText(), skin);
+                tryLoggingIn(logInGroup, usernameField.getText(), passwordField.getText(), skin, true);
                 registerGroup.setVisible(false);
             }
         });
@@ -331,10 +373,9 @@ public class GameStore extends Group {
         logInGroup.setVisible(false);
     }
 
-    private void tryLoggingIn(String username, String password, Skin skin) {
+    public void tryLoggingIn(Group group, String username, String password, Skin skin, boolean visibility) {
         String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
+        Connection connection = db.connect(db.getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM users "
                 + "WHERE users.username='" + username + "'"
                 + " AND "
@@ -342,12 +383,12 @@ public class GameStore extends Group {
         try {
             if(rs.next()) {
                 loggedIn = true;
-                user = new User(username);
-                removeError(logInGroup);
-                logInGroup.setVisible(false);
-                init(skin, true);
+                user = new User(username, db);
+                removeError(group);
+                group.setVisible(false);
+                init(skin, visibility);
             } else {
-                addError("Username or password not recognised!", logInGroup, skin);
+                addError("Username or password not recognised!", group, skin);
             }
             connection.close();
         } catch (SQLException e) {
@@ -412,8 +453,7 @@ public class GameStore extends Group {
             addError("All fields must be completed!", registerGroup, skin);
         } else if (EmailValidator.getInstance().isValid(email)){
             String hashedPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-            Database db = new LocalDatabase();
-            Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
+            Connection connection = db.connect(db.getDataSource("mysql"));
             try {
                 db.otherQuery(connection, "INSERT INTO users \n VALUES( "
                         + "'"
@@ -448,8 +488,7 @@ public class GameStore extends Group {
     }
 
     public List<Level> getAllGames() {
-        Database db = new LocalDatabase();
-        Connection connection = db.connect(LocalDatabase.getDataSource("mysql"));
+        Connection connection = db.connect(db.getDataSource("mysql"));
         ResultSet rs = db.selectQuery(connection, "SELECT * FROM games");
         List<Level> allGames = new ArrayList<>();
         try {
@@ -457,8 +496,10 @@ public class GameStore extends Group {
                 String gameName = rs.getString("game_name");
                 String gameXML = rs.getString("game_xml");
                 String gameOwner = rs.getString("game_user");
+                java.sql.Date gameDate = rs.getDate("game_date");
                 Level newLevel = LevelFactory.createLevel(gameXML, gameName);
                 newLevel.setOwner(gameOwner);
+                newLevel.setDate(gameDate);
                 allGames.add(newLevel);
             }
             connection.close();
@@ -466,5 +507,9 @@ public class GameStore extends Group {
             throw new RuntimeException("Could not fetch the games due to an sql error: " + e);
         }
         return allGames;
+    }
+
+    public Group getLogInGroup() {
+        return logInGroup;
     }
 }
