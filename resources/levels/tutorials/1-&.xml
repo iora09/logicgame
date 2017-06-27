@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root type="TUTORIAL" tut_type="NOT">
+<root type="TUTORIAL" tut_type="AND">
 <bob x="11" y="11" />
 <rules available="4" />
 <text>
-    NEGATION
+    CONJUNCTION
 </text>
 <tut-text>
-    The NOT block changes the truth of anything that it's placed in front of.
-    Which of these is FALSE about Bob?
+    The AND block ties 2 or more blocks together such that:
+    True AND True = True
+    True AND False = False
+    False AND True = False
+    False AND False = False
+    Which of these are True about Bob.
 </tut-text>
 <choices>
     <choice>
-        <correct value="False" />
+        <correct value="True" />
         <rule>
-         <block name="not" />
-         <block name="red" />
+         <block name="white" />
+         <block name="and" />
+         <block name="red_north"/>
         </rule>
     </choice>
     <choice>
         <correct value="False" />
         <rule>
-            <block name="not" />
-            <block name="not" />
          <block name="orange" />
+         <block name="and" />
+         <block name="water_south" />
         </rule>
     </choice>
      <choice>
-        <correct value="True" />
+        <correct value="False" />
         <rule>
-         <block name="not" />
          <block name="white" />
+         <block name="and" />
+         <block name="yellow_south"/>
         </rule>
     </choice>
     <choice>
-        <correct value="True" />
+        <correct value="False" />
         <rule>
-            <block name="not" />
-            <block name="water_south" />
+            <block name="water_north" />
+            <block name="and" />
+            <block name="red_west"/>
         </rule>
     </choice>
 </choices>
@@ -51,8 +58,8 @@
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
-9,9,9,9,9,9,9,9,9,9,9,1,9,9,9,9,9,9,9,9,9,9,9,
+9,9,9,9,9,9,9,9,9,9,9,2,9,9,9,9,9,9,9,9,9,9,9,
+9,9,9,9,9,9,9,9,9,9,9,1,3,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,

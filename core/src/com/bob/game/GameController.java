@@ -232,7 +232,7 @@ public class GameController {
                     worldController.setLevelWon();
                 } else {
                     layerGroup.setVisibility("tryAgain", true);
-                    if (!choicesManager.areCorrectRulesComplete()) {
+                    if (choicesManager.areAllCheckedRulesCorrect() && !choicesManager.areCorrectRulesComplete()) {
                         layerGroup.setVisibility("notComplete", true);
                     }
                 }
