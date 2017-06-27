@@ -26,31 +26,36 @@ public class LevelFactory {
     }
 
     private static void populateWrite() {
-        File folder = new File("levels/write");
-        for (final File file : folder.listFiles()) {
-            loadInternalLevel(file.getPath());
-        }
+        loadInternalLevel("levels/write/1.xml");
+        loadInternalLevel("levels/write/2.xml");
+        loadInternalLevel("levels/write/3.xml");
+        loadInternalLevel("levels/write/4.xml");
+        loadInternalLevel("levels/write/5.xml");
     }
 
     private static void populateRead() {
-        File folder = new File("levels/read");
-        for (final File file : folder.listFiles()) {
-            loadInternalLevel(file.getPath());
-        }
+        loadInternalLevel("levels/read/1.xml");
+        loadInternalLevel("levels/read/2.xml");
+        loadInternalLevel("levels/read/3.xml");
     }
 
     private static void populateMacro() {
-        File folder = new File("levels/macro");
-        for (final File file : folder.listFiles()) {
-            loadInternalLevel(file.getPath());
-        }
+        loadInternalLevel("levels/macro/1.xml");
+        loadInternalLevel("levels/macro/2.xml");
     }
 
     private static void populateTutorials() {
-        File folder = new File("levels/tutorials");
-        for (final File file : folder.listFiles()) {
-            loadInternalLevel(file.getPath());
-        }
+        loadInternalLevel("levels/tutorials/1-C.xml");
+        loadInternalLevel("levels/tutorials/1-N.xml");
+        loadInternalLevel("levels/tutorials/1-&.xml");
+        loadInternalLevel("levels/tutorials/2-C.xml");
+        loadInternalLevel("levels/tutorials/2-N.xml");
+        loadInternalLevel("levels/tutorials/2-&.xml");
+        loadInternalLevel("levels/tutorials/3-C.xml");
+        loadInternalLevel("levels/tutorials/3-N.xml");
+        loadInternalLevel("levels/tutorials/3-&.xml");
+        loadInternalLevel("levels/tutorials/4-C.xml");
+        loadInternalLevel("levels/tutorials/4-&.xml");
     }
 
     public static Level loadExternaLevel(String path) {
