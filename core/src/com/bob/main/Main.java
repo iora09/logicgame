@@ -4,18 +4,17 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.utils.viewport.*;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.GameController;
-import com.bob.game.database.LocalDatabase;
+import com.bob.game.database.OnlineDatabase;
 import com.bob.game.levels.Level;
 import com.bob.game.levels.LevelFactory;
 import com.bob.game.world.Textures;
@@ -31,7 +30,7 @@ public class Main extends ApplicationAdapter {
 
 	protected Menu menu;
 	private GameController gameController;
-	private GameStore gameStore = new GameStore(new LocalDatabase());
+	private GameStore gameStore = new GameStore(new OnlineDatabase());
 
 	@Override
 	public void create() {

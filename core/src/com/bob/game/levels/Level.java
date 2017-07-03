@@ -105,6 +105,10 @@ public abstract class Level {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public Block[][] getRules() {
         return rules;
     }

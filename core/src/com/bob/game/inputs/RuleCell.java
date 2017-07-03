@@ -24,7 +24,7 @@ public class RuleCell extends Target{
             actor.setBounds(targetX, targetY, 50, 50);
             layer.addActorFirst(actor);
 
-            TextTooltip tooltip = new TextTooltip(((Block) payload).getTooltip(), skin);
+            TextTooltip tooltip = new TextTooltip(((Block) payload).getTooltip(), skin, "tooltipStyle");
             tooltip.setInstant(true);
             actor.addListener(tooltip);
 

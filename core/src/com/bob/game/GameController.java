@@ -1,15 +1,15 @@
 package com.bob.game;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.bob.game.inputs.*;
 import com.bob.game.levels.Level;
 import com.bob.game.world.WorldController;
 import com.bob.main.*;
 
-import java.util.*;
+import java.util.LinkedList;
 
 public class GameController {
 
@@ -79,8 +79,9 @@ public class GameController {
 
         currentHint = 0;
         ((BackgroundLayer)layerGroup.get("background")).changeForeground("screens/foreground.png");
-        if (currentLevel.hasHints()) {
-
+        if (currentLevel.hasTutorial() && !currentLevel.equals("CREATE")) {
+            ((HelpScreen) layerGroup.get("help screen")).setImages(currentLevel.getTutorialImages());
+            layerGroup.setVisibility("help screen", true);
         }
 
         worldController.setupWorld(currentLevel);

@@ -16,10 +16,13 @@ import com.google.common.hash.Hashing;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -255,6 +258,7 @@ public class GameStore extends Group {
                         createMode = Menu.Create.NOTHING;
                 }
                 game.resetTutorials();
+                game.setText(game.getLevelName());
                 Menu.createMode = createMode;
                 game.setType("CREATE");
                 Menu.launchLevel(game);

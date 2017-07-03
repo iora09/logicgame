@@ -1,9 +1,9 @@
 package com.bob.game.database;
 
+import com.badlogic.gdx.Gdx;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,7 +27,7 @@ public class OnlineDatabase implements Database{
         BasicDataSource ds = new BasicDataSource();
         Properties prop = new Properties();
         try {
-            prop.load(new FileInputStream("db.prop"));
+            prop.load(Gdx.files.internal("db/db.prop").read());
         } catch (IOException e) {
             throw new RuntimeException("The database properties file(db.prop) is not found or could not be opened: " + e);
         }
