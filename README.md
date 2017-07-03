@@ -13,4 +13,4 @@ You can now create your own levels, edit them and share them for everyone to pla
 - You can download a simple jar file here (you'll need a JRE 1.7 or above): [DOWNLOAD JAR](https://github.com/iora09/logicgame/blob/master/release/Bob_the_simplebot.jar:raw?true)
 - If you're on Windows, you'll find a portable executable here: [DOWNLOAD EXE](https://github.com/iora09/logicgame/blob/master/release/Bob_the_simplebot.exe:raw?true)
 - Otherwise, you can import the project using gradle. then use `./gradlew desktop:run` on Linux and Mac and use `gradlew.bat desktop:run` on windows. If you run it through an IDE you'll need to set the working directory to the "resources" folder.
-
+- To run the project from gradle you will need the "db.prop" file, which you will need to put in the "resources/db" folder.
